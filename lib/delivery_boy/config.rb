@@ -49,6 +49,19 @@ module DeliveryBoy
       load_env(env)
     end
 
+    def load_file(path, environment)
+      # First, load the ERB template from disk.
+      template = ERB.new(File.new(path).read)
+
+      # The last argument to `safe_load` allows us to use aliasing to share
+      # configuration between environments.
+      processed = YAML.safe_load(template.result(binding), [], [], true)
+
+      data = processed.fetch(environment)
+
+      load_config(data)
+    end
+
     private
 
     def load_config(config)

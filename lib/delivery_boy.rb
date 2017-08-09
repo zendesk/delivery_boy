@@ -46,8 +46,20 @@ module DeliveryBoy
       @logger ||= Logger.new($stdout)
     end
 
+    attr_writer :logger
+
     def config
-      @config ||= DeliveryBoy::Config.new(env: ENV)
+      @config ||= load_config
+    end
+
+    def load_config
+      config = DeliveryBoy::Config.new(env: ENV)
+
+      if defined?(Rails)
+        config.load_file("config/delivery_boy.yml", Rails.environment)
+      end
+
+      config
     end
 
     # Options for both the sync and async producers.
