@@ -1,4 +1,4 @@
-require "delivery_boy/env_config/loader"
+require "delivery_boy/env_config_loader"
 
 module DeliveryBoy
   ConfigError = Class.new(StandardError)
@@ -6,6 +6,8 @@ module DeliveryBoy
   class Config
     VARIABLES = %w[
       ack_timeout
+      brokers
+      client_id
       compression_codec
       compression_threshold
       connect_timeout
@@ -24,8 +26,20 @@ module DeliveryBoy
     ]
 
     DEFAULTS = {
+      ack_timeout: 5,
       brokers: ["localhost:9092"],
       client_id: "delivery_boy",
+      compression_threshold: 1,
+      connect_timeout: 10,
+      max_buffer_bytesize: 10_000_000,
+      max_buffer_size: 1000,
+      max_retries: 2,
+      required_acks: :all,
+      retry_backoff: 1,
+      socket_timeout: 30,
+      delivery_interval: 0,
+      delivery_threshold: 0,
+      max_queue_size: 1000,
     }
 
     attr_accessor(*VARIABLES)

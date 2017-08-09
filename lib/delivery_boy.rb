@@ -1,4 +1,5 @@
 require "logger"
+require "kafka"
 require "delivery_boy/version"
 require "delivery_boy/config"
 
