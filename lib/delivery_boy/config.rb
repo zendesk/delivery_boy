@@ -1,3 +1,5 @@
+require "erb"
+require "yaml"
 require "delivery_boy/env_config_loader"
 
 module DeliveryBoy
