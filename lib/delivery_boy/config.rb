@@ -1,6 +1,7 @@
 require "erb"
 require "yaml"
 require "delivery_boy/env_config_loader"
+require "delivery_boy/config_file_loader"
 require "delivery_boy/config_error"
 
 module DeliveryBoy
@@ -51,16 +52,8 @@ module DeliveryBoy
     end
 
     def load_file(path, environment)
-      # First, load the ERB template from disk.
-      template = ERB.new(File.new(path).read)
-
-      # The last argument to `safe_load` allows us to use aliasing to share
-      # configuration between environments.
-      processed = YAML.safe_load(template.result(binding), [], [], true)
-
-      data = processed.fetch(environment)
-
-      load_config(data)
+      loader = ConfigFileLoader.new(self)
+      loader.load_file(path, environment)
     end
 
     private
