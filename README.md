@@ -1,8 +1,6 @@
 # DeliveryBoy
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/delivery_boy`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This library provides a dead easy way to start publishing messages to a Kafka cluster from your Ruby or Rails application!
 
 ## Installation
 
@@ -22,17 +20,48 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Once you've [installed the gem](#installation), you can simply start publishing messages to Kafka:
 
-## Development
+```ruby
+# app/controllers/comments_controller.rb
+class CommentsController < ApplicationController
+  def create
+    @comment = Comment.create!(params)
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+    # This will publish a JSON representation of the comment to the `comments` topic
+    # in Kafka. Make sure to create the topic first, or this may fail.
+    DeliveryBoy.deliver(comment.to_json, topic: "comments")
+  end
+end
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+The above example will block the server process until the message has been delivered. If you want deliveries to happen in the background in order to free up your server processes more quickly, call `#deliver_async` instead:
+
+```ruby
+# app/controllers/comments_controller.rb
+class CommentsController < ApplicationController
+  def show
+    @comment = Comment.find(params[:id])
+
+    event = {
+      name: "comment_viewed",
+      data: {
+        comment_id: @comment.id,
+        user_id: current_user.id
+      }
+    }
+
+    # By delivering messages asynchronously you free up your server processes faster.
+    DeliveryBoy.deliver_async(event.to_json, topic: "activity")
+  end
+end
+```
+
+In addition to improving response time, deliverying messages asynchronously also protects your application against Kafka availability issues -- if messages cannot be delivered, they'll be buffered for later and retried automatically.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/dasch/delivery_boy.
+Bug reports and pull requests are welcome on [GitHub](https://github.com/dasch/delivery_boy).
 
 ## Copyright and license
 
