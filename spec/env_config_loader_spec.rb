@@ -14,7 +14,7 @@ class FakeConfig
   end
 end
 
-describe DeliveryBoy::EnvConfigLoader do
+RSpec.describe DeliveryBoy::EnvConfigLoader do
   let(:env) { Hash.new }
   let(:config) { FakeConfig.new }
   let(:loader) { DeliveryBoy::EnvConfigLoader.new(env, config) }
