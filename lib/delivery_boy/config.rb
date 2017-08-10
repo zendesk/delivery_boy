@@ -1,10 +1,9 @@
 require "erb"
 require "yaml"
 require "delivery_boy/env_config_loader"
+require "delivery_boy/config_error"
 
 module DeliveryBoy
-  ConfigError = Class.new(StandardError)
-
   class Config
     VARIABLES = %w[
       ack_timeout

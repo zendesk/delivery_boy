@@ -1,3 +1,5 @@
+require "delivery_boy/config_error"
+
 module DeliveryBoy
   class EnvConfigLoader
     def initialize(env, config)
