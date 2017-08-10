@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Once you've [installed the gem](#installation), you can simply start publishing messages to Kafka:
+Once you've [installed the gem](#installation), and assuming your Kafka broker is running on localhost, you can simply start publishing messages to Kafka:
 
 ```ruby
 # app/controllers/comments_controller.rb
@@ -58,6 +58,23 @@ end
 ```
 
 In addition to improving response time, deliverying messages asynchronously also protects your application against Kafka availability issues -- if messages cannot be delivered, they'll be buffered for later and retried automatically.
+
+### Configuration
+
+You configure DeliveryBoy either through a config file or by setting environment variables.
+
+If you're using Rails, the fastest way to get started is to execute the following in your terminal:
+
+```
+$ bundle exec rails generate delivery_boy:install
+```
+
+This will create a config file at `config/delivery_boy.yml` with configurations for each of your Rails environments. Open that file in order to make changes.
+
+The following configuration variables can be set:
+
+* `brokers` – A list of Kafka brokers that should be used to initialize the client. Defaults to just `localhost:9092` in development and test, but in production you need to pass a list of `hostname:port` strings.
+* `client_id` – This is how the client will identify itself to the Kafka brokers. Useful for debugging.
 
 ## Contributing
 
