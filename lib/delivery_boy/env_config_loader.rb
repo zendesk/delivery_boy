@@ -2,6 +2,8 @@ require "delivery_boy/config_error"
 
 module DeliveryBoy
   class EnvConfigLoader
+    KEY_PREFIX = "DELIVERY_BOY"
+
     def initialize(env, config)
       @env = env
       @config = config
@@ -29,7 +31,7 @@ module DeliveryBoy
     def validate!
       # Make sure the user hasn't made a typo and added a key we don't know
       # about.
-      @env.keys.grep(/^DELIVERY_BOY_/).each do |key|
+      @env.keys.grep(/^#{KEY_PREFIX}_/).each do |key|
         unless @loaded_keys.include?(key)
           raise ConfigError, "unknown config variable #{key}"
         end
@@ -39,7 +41,7 @@ module DeliveryBoy
     private
 
     def set(name)
-      key = "DELIVERY_BOY_#{name.upcase}"
+      key = "#{KEY_PREFIX}_#{name.upcase}"
 
       if @env.key?(key)
         value = yield @env.fetch(key)
