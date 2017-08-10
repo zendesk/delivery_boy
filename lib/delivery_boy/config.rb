@@ -89,7 +89,7 @@ module DeliveryBoy
 
     def set(variable, value)
       unless VARIABLES.include?(variable.to_s)
-        raise ConfigError, "unknown configuration variable `#{variable}`"
+        raise ConfigError, "unknown configuration variable #{variable}"
       end
 
       instance_variable_set("@#{variable}", value)
