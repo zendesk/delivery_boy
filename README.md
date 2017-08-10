@@ -57,7 +57,7 @@ class CommentsController < ApplicationController
 end
 ```
 
-In addition to improving response time, deliverying messages asynchronously also protects your application against Kafka availability issues -- if messages cannot be delivered, they'll be buffered for later and retried automatically.
+In addition to improving response time, delivering messages asynchronously also protects your application against Kafka availability issues -- if messages cannot be delivered, they'll be buffered for later and retried automatically.
 
 ### Configuration
 
