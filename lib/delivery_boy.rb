@@ -2,6 +2,7 @@ require "logger"
 require "kafka"
 require "delivery_boy/version"
 require "delivery_boy/config"
+require "delivery_boy/railtie" if defined?(Rails)
 
 module DeliveryBoy
   class << self
@@ -14,10 +15,29 @@ module DeliveryBoy
       async_producer.produce(value, topic: topic, **options)
     end
 
+    def shutdown
+      sync_producer.shutdown if sync_producer?
+      async_producer.shutdown if async_producer?
+    end
+
+    def logger
+      @logger ||= Logger.new($stdout)
+    end
+
+    attr_writer :logger
+
+    def config
+      @config ||= DeliveryBoy::Config.new(env: ENV)
+    end
+
     private
 
     def sync_producer
       Thread.current[:delivery_boy_sync_producer] ||= kafka.producer(**producer_options)
+    end
+
+    def sync_producer?
+      Thread.current.key?(:delivery_boy_sync_producer)
     end
 
     def async_producer
@@ -27,6 +47,10 @@ module DeliveryBoy
         delivery_interval: config.delivery_interval,
         **producer_options,
       )
+    end
+
+    def async_producer?
+      Thread.current.key?(:delivery_boy_async_producer)
     end
 
     def kafka
@@ -40,26 +64,6 @@ module DeliveryBoy
         ssl_client_cert: config.ssl_client_cert,
         ssl_client_cert_key: config.ssl_client_cert_key,
       )
-    end
-
-    def logger
-      @logger ||= Logger.new($stdout)
-    end
-
-    attr_writer :logger
-
-    def config
-      @config ||= load_config
-    end
-
-    def load_config
-      config = DeliveryBoy::Config.new(env: ENV)
-
-      if defined?(Rails)
-        config.load_file("config/delivery_boy.yml", Rails.environment)
-      end
-
-      config
     end
 
     # Options for both the sync and async producers.
