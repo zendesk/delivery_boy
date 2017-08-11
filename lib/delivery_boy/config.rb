@@ -39,8 +39,8 @@ module DeliveryBoy
       required_acks: :all,
       retry_backoff: 1,
       socket_timeout: 30,
-      delivery_interval: 0,
-      delivery_threshold: 0,
+      delivery_interval: 10,
+      delivery_threshold: 100,
       max_queue_size: 1000,
     }
 
