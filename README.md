@@ -73,24 +73,60 @@ This will create a config file at `config/delivery_boy.yml` with configurations 
 
 The following configuration variables can be set:
 
-* `brokers` – A list of Kafka brokers that should be used to initialize the client. Defaults to just `localhost:9092` in development and test, but in production you need to pass a list of `hostname:port` strings.
-* `client_id` – This is how the client will identify itself to the Kafka brokers. Useful for debugging.
-* `ack_timeout`
-* `compression_codec`
-* `compression_threshold`
-* `connect_timeout`
-* `delivery_interval`
-* `delivery_threshold`
-* `max_buffer_bytesize`
-* `max_buffer_size`
-* `max_queue_size`
-* `max_retries`
-* `required_acks`
-* `retry_backoff`
-* `socket_timeout`
-* `ssl_ca_cert`
-* `ssl_client_cert`
-* `ssl_client_cert_key`
+##### `brokers`
+
+A list of Kafka brokers that should be used to initialize the client. Defaults to just `localhost:9092` in development and test, but in production you need to pass a list of `hostname:port` strings.
+
+##### `client_id`
+
+This is how the client will identify itself to the Kafka brokers. Default is `delivery_boy`.
+
+##### `ack_timeout`
+
+A timeout executed by a broker when the client is sending messages to it. It defines the number of seconds the broker should wait for replicas to acknowledge the write before responding to the client with an error. As such, it relates to the `required_acks` setting. It should be set lower than `socket_timeout`.
+
+##### `compression_codec`
+
+The codec used to compress messages. Must be either `snappy` or `gzip`.
+
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#compression) for more information.
+
+##### `compression_threshold`
+
+The minimum number of messages that must be buffered before compression is attempted. By default only one message is required. Only relevant if `compression_codec` is set.
+
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#compression) for more information.
+
+##### `connect_timeout`
+
+The number of seconds to wait while connecting to a broker for the first time. When the Kafka library is initialized, it needs to connect to at least one host in `brokers` in order to discover the Kafka cluster. Each host is tried until there's one that works. Usually that means the first one, but if your entire cluster is down, or there's a network partition, you could wait up to `n * connect_timeout` seconds, where `n` is the number of hostnames in `brokers`.
+
+##### `delivery_interval`
+##### `delivery_threshold`
+##### `max_buffer_bytesize`
+##### `max_buffer_size`
+##### `max_queue_size`
+##### `max_retries`
+##### `required_acks`
+##### `retry_backoff`
+
+The number of seconds to wait after a failed attempt to send messages to a Kafka broker before retrying. The `max_retries` setting defines the maximum number of retries to attempt, and so the total duration could be up to `max_retries * retry_backoff` seconds. The timeout can be arbitrarily long, and shouldn't be too short: if a broker goes down its partitions will be handed off to another broker, and that can take tens of seconds.
+
+##### `socket_timeout`
+
+Timeout when reading data from a socket connection to a Kafka broker. Must be larger than `ack_timeout` or you risk killing the socket before the broker has time to acknowledge your messages.
+
+##### `ssl_ca_cert`
+
+A PEM encoded CA cert, or an Array of PEM encoded CA certs, to use with an SSL connection.
+
+##### `ssl_client_cert`
+
+A PEM encoded client cert to use with an SSL connection. Must be used in combination with `ssl_client_cert_key`.
+
+##### `ssl_client_cert_key`
+
+A PEM encoded client cert key to use with an SSL connection. Must be used in combination with `ssl_client_cert`.
 
 ## Contributing
 
