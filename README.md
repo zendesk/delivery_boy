@@ -113,17 +113,15 @@ The number of seconds to wait after a failed attempt to send messages to a Kafka
 
 #### Compression
 
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#compression) for more information.
+
 ##### `compression_codec`
 
 The codec used to compress messages. Must be either `snappy` or `gzip`.
 
-See [ruby-kafka](https://github.com/zendesk/ruby-kafka#compression) for more information.
-
 ##### `compression_threshold`
 
 The minimum number of messages that must be buffered before compression is attempted. By default only one message is required. Only relevant if `compression_codec` is set.
-
-See [ruby-kafka](https://github.com/zendesk/ruby-kafka#compression) for more information.
 
 #### Network
 
@@ -142,6 +140,8 @@ Timeout when reading data from a socket connection to a Kafka broker. Must be la
 ##### `max_queue_size`
 
 #### Authentication and authorization
+
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#security) for more information.
 
 ##### `ssl_ca_cert`
 
