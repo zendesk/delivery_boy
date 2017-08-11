@@ -102,12 +102,27 @@ See [ruby-kafka](https://github.com/zendesk/ruby-kafka#compression) for more inf
 The number of seconds to wait while connecting to a broker for the first time. When the Kafka library is initialized, it needs to connect to at least one host in `brokers` in order to discover the Kafka cluster. Each host is tried until there's one that works. Usually that means the first one, but if your entire cluster is down, or there's a network partition, you could wait up to `n * connect_timeout` seconds, where `n` is the number of hostnames in `brokers`.
 
 ##### `delivery_interval`
+
+The number of seconds between background message deliveries. Default is 10 seconds. Disable timer-based background deliveries by setting this to 0.
+
 ##### `delivery_threshold`
+
+The number of buffered messages that will trigger a background message delivery. Default is 100 messages. Disable buffer size based background deliveries by setting this to 0.
+
 ##### `max_buffer_bytesize`
 ##### `max_buffer_size`
 ##### `max_queue_size`
+
 ##### `max_retries`
+
+The number of retries when attempting to deliver messages. The default is 2, so 3 attempts in total, but you can configure a higher or lower number.
+
 ##### `required_acks`
+
+The number of Kafka replicas that must acknowledge messages before they're considered as successfully written. Default is _all_ replicas.
+
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#message-durability) for more information.
+
 ##### `retry_backoff`
 
 The number of seconds to wait after a failed attempt to send messages to a Kafka broker before retrying. The `max_retries` setting defines the maximum number of retries to attempt, and so the total duration could be up to `max_retries * retry_backoff` seconds. The timeout can be arbitrarily long, and shouldn't be too short: if a broker goes down its partitions will be handed off to another broker, and that can take tens of seconds.
