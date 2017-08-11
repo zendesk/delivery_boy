@@ -75,6 +75,22 @@ The following configuration variables can be set:
 
 * `brokers` – A list of Kafka brokers that should be used to initialize the client. Defaults to just `localhost:9092` in development and test, but in production you need to pass a list of `hostname:port` strings.
 * `client_id` – This is how the client will identify itself to the Kafka brokers. Useful for debugging.
+* `ack_timeout`
+* `compression_codec`
+* `compression_threshold`
+* `connect_timeout`
+* `delivery_interval`
+* `delivery_threshold`
+* `max_buffer_bytesize`
+* `max_buffer_size`
+* `max_queue_size`
+* `max_retries`
+* `required_acks`
+* `retry_backoff`
+* `socket_timeout`
+* `ssl_ca_cert`
+* `ssl_client_cert`
+* `ssl_client_cert_key`
 
 ## Contributing
 
