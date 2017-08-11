@@ -82,7 +82,7 @@ Bug reports and pull requests are welcome on [GitHub](https://github.com/dasch/d
 
 ## Copyright and license
 
-Copyright 2017 Daniel Schierbeck & Zendesk
+Copyright 2017 Zendesk, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
