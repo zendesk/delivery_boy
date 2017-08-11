@@ -14,6 +14,10 @@ module DeliveryBoy
       set(name) {|value| value }
     end
 
+    def symbol(name)
+      set(name) {|value| value.to_sym }
+    end
+
     def integer(name)
       set(name) do |value|
         begin

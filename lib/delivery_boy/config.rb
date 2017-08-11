@@ -68,7 +68,7 @@ module DeliveryBoy
       loader = EnvConfigLoader.new(env, self)
 
       loader.integer :ack_timeout
-      loader.string :compression_codec
+      loader.symbol :compression_codec
       loader.integer :compression_threshold
       loader.integer :connect_timeout
       loader.integer :delivery_interval

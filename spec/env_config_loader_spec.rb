@@ -35,6 +35,16 @@ RSpec.describe DeliveryBoy::EnvConfigLoader do
     end
   end
 
+  describe "#symbol" do
+    it "sets a Symbol variable" do
+      env["DELIVERY_BOY_HELLO"] = "world"
+
+      loader.symbol :hello
+
+      expect(config.hello).to eq :world
+    end
+  end
+
   describe "#string_list" do
     it "sets a String array variable" do
       env["DELIVERY_BOY_GREETINGS"] = "hello,howdy,morning"
