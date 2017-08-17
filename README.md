@@ -135,9 +135,19 @@ Timeout when reading data from a socket connection to a Kafka broker. Must be la
 
 #### Buffering
 
+When using the asynhronous API, messages are buffered in a background thread and delivered to Kafka based on the configured delivery policy. Because of this, problems that hinder the delivery of messages can cause the buffer to grow. In order to avoid unlimited buffer growth that would risk affecting the host application, some limits are put in place. After the buffer reaches the maximum size allowed, calling `DeliveryBoy.deliver_async` will raise `Kafka::BufferOverflow`.
+
 ##### `max_buffer_bytesize`
+
+The maximum number of bytes allowed in the buffer before new messages are rejected.
+
 ##### `max_buffer_size`
+
+The maximum number of messages allowed in the buffer before new messages are rejected.
+
 ##### `max_queue_size`
+
+The maximum number of messages allowed in the queue before new messages are rejected. The queue is used to ferry messages from the foreground threads of your application to the background thread that buffers and delivers messages. You typically only want to increase this number if you have a very high throughput of messages and the background thread can't keep up with spikes in throughput.
 
 #### Authentication and authorization
 
