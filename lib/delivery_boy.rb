@@ -38,6 +38,8 @@ module DeliveryBoy
     private
 
     def sync_producer
+      # We want synchronous producers to be per-thread in order to avoid problems with
+      # concurrent deliveries.
       Thread.current[:delivery_boy_sync_producer] ||= kafka.producer(**producer_options)
     end
 
@@ -46,7 +48,9 @@ module DeliveryBoy
     end
 
     def async_producer
-      Thread.current[:delivery_boy_async_producer] ||= kafka.async_producer(
+      # The async producer doesn't have to be per-thread, since all deliveries are
+      # performed by a single background thread.
+      @async_producer ||= kafka.async_producer(
         max_queue_size: config.max_queue_size,
         delivery_threshold: config.delivery_threshold,
         delivery_interval: config.delivery_interval,
@@ -55,11 +59,11 @@ module DeliveryBoy
     end
 
     def async_producer?
-      Thread.current.key?(:delivery_boy_async_producer)
+      !@async_producer.nil?
     end
 
     def kafka
-      Thread.current[:delivery_boy_kafka] ||= Kafka.new(
+      @kafka ||= Kafka.new(
         seed_brokers: config.brokers,
         client_id: config.client_id,
         logger: logger,
