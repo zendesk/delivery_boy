@@ -165,6 +165,10 @@ A PEM encoded client cert to use with an SSL connection. Must be used in combina
 
 A PEM encoded client cert key to use with an SSL connection. Must be used in combination with `ssl_client_cert`.
 
+### Instrumentation & monitoring
+
+Since DeliveryBoy is just an opinionated API on top of ruby-kafka, you can use all the [instrumentation made available by that library](https://github.com/zendesk/ruby-kafka#instrumentation). You can also use the [existing monitoring solutions](https://github.com/zendesk/ruby-kafka#monitoring) that integrate with various monitoring services.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on [GitHub](https://github.com/dasch/delivery_boy).
