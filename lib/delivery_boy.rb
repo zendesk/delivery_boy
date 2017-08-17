@@ -9,6 +9,11 @@ module DeliveryBoy
     def deliver(value, topic:, **options)
       sync_producer.produce(value, topic: topic, **options)
       sync_producer.deliver_messages
+    rescue
+      # Make sure to clear any buffered messages if there's an error.
+      sync_producer.clear_buffer
+
+      raise
     end
 
     def deliver_async(value, topic:, **options)
