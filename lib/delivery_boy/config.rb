@@ -46,7 +46,7 @@ module DeliveryBoy
 
     attr_accessor(*VARIABLES)
 
-    def initialize(env:)
+    def initialize(env: {})
       load_config(DEFAULTS)
       load_env(env)
     end
