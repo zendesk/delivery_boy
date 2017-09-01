@@ -56,6 +56,14 @@ module DeliveryBoy
       loader.load_file(path, environment)
     end
 
+    def set(variable, value)
+      unless VARIABLES.include?(variable.to_s)
+        raise ConfigError, "unknown configuration variable #{variable}"
+      end
+
+      instance_variable_set("@#{variable}", value)
+    end
+
     private
 
     def load_config(config)
@@ -85,14 +93,6 @@ module DeliveryBoy
       loader.string :ssl_client_cert_key
 
       loader.validate!
-    end
-
-    def set(variable, value)
-      unless VARIABLES.include?(variable.to_s)
-        raise ConfigError, "unknown configuration variable #{variable}"
-      end
-
-      instance_variable_set("@#{variable}", value)
     end
   end
 end
