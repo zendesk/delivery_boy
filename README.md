@@ -171,7 +171,13 @@ Since DeliveryBoy is just an opinionated API on top of ruby-kafka, you can use a
 
 ## Contributing
 
-Bug reports and pull requests are welcome on [GitHub](https://github.com/dasch/delivery_boy).
+Bug reports and pull requests are welcome on [GitHub](https://github.com/zendesk/delivery_boy). Feel free to [join our Slack team](https://ruby-kafka-slack.herokuapp.com/) and ask how best to contribute!
+
+## Support and Discussion
+
+If you've discovered a bug, please file a [Github issue](https://github.com/zendesk/delivery_boy/issues/new), and make sure to include all the relevant information, including the version of DeliveryBoy, ruby-kafka, and Kafka that you're using.
+
+If you have other questions, or would like to discuss best practises, how to contribute to the project, or any other ruby-kafka related topic, [join our Slack team](https://ruby-kafka-slack.herokuapp.com/)!
 
 ## Copyright and license
 
