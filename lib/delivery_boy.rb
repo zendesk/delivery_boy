@@ -17,6 +17,12 @@ module DeliveryBoy
     end
 
     def deliver_async(value, topic:, **options)
+      deliver_async!(value, topic: topic, **options)
+    rescue Kafka::BufferOverflow
+      logger.error "Message for `#{topic}` dropped due to buffer overflow"
+    end
+
+    def deliver_async!(value, topic:, **options)
       async_producer.produce(value, topic: topic, **options)
     end
 
