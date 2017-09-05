@@ -32,27 +32,47 @@ module DeliveryBoy
       raise
     end
 
+    # Like {.deliver_async!}, but handles +Kafka::BufferOverflow+ errors
+    # by logging them and just going on with normal business.
+    #
+    # @return [nil]
     def deliver_async(value, topic:, **options)
       deliver_async!(value, topic: topic, **options)
     rescue Kafka::BufferOverflow
       logger.error "Message for `#{topic}` dropped due to buffer overflow"
     end
 
+    # Like {.deliver}, but returns immediately.
+    #
+    # The actual delivery takes place in a background thread.
+    #
+    # @return [nil]
     def deliver_async!(value, topic:, **options)
       async_producer.produce(value, topic: topic, **options)
     end
 
+    # Shut down DeliveryBoy.
+    #
+    # Automatically called when the process exits.
+    #
+    # @return [nil]
     def shutdown
       sync_producer.shutdown if sync_producer?
       async_producer.shutdown if async_producer?
     end
 
+    # The logger used by DeliveryBoy.
+    #
+    # @return [Logger]
     def logger
       @logger ||= Logger.new($stdout)
     end
 
     attr_writer :logger
 
+    # The configuration used by DeliveryBoy.
+    #
+    # @return [DeliveryBoy::Config]
     def config
       @config ||= DeliveryBoy::Config.new(env: ENV)
     end
