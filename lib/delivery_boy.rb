@@ -6,6 +6,22 @@ require "delivery_boy/railtie" if defined?(Rails)
 
 module DeliveryBoy
   class << self
+
+    # Write a message to a specified Kafka topic synchronously.
+    #
+    # Keep in mind that the client will block until the message has been
+    # delivered.
+    #
+    # @param value [String] the message value.
+    # @param topic [String] the topic that the message should be written to.
+    # @param key [String, nil] the message key.
+    # @param partition [Integer, nil] the topic partition that the message should
+    #   be written to.
+    # @param partition_key [String, nil] a key used to deterministically assign
+    #   a partition to the message.
+    # @return [nil]
+    # @raise [Kafka::BufferOverflow] if the producer's buffer is full.
+    # @raise [Kafka::DeliveryFailed] if delivery failed for some reason.
     def deliver(value, topic:, **options)
       sync_producer.produce(value, topic: topic, **options)
       sync_producer.deliver_messages
