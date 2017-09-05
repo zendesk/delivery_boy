@@ -96,3 +96,5 @@ module DeliveryBoy
     end
   end
 end
+
+at_exit { DeliveryBoy.shutdown }
