@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Once you've [installed the gem](#installation), and assuming your Kafka broker is running on localhost, you can simply start publishing messages to Kafka:
+Once you've [installed the gem](#installation), and assuming your Kafka broker is running on localhost, you can simply start publishing messages to Kafka directly from your Rails code:
 
 ```ruby
 # app/controllers/comments_controller.rb
