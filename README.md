@@ -71,6 +71,8 @@ $ bundle exec rails generate delivery_boy:install
 
 This will create a config file at `config/delivery_boy.yml` with configurations for each of your Rails environments. Open that file in order to make changes.
 
+Note that for most configuration variables, you can pass in an environment variable. These environment variables all take the form `DELIVERY_BOY_X`, where `X` is the upper-case configuration variable name, e.g. `DELIVERY_BOY_CLIENT_ID`.
+
 The following configuration variables can be set:
 
 #### Basic
