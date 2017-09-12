@@ -1,104 +1,26 @@
-require "erb"
-require "yaml"
-require "delivery_boy/env_config_loader"
-require "delivery_boy/config_file_loader"
-require "delivery_boy/config_error"
+require "king_konf"
 
 module DeliveryBoy
-  class Config
-    VARIABLES = %w[
-      ack_timeout
-      brokers
-      client_id
-      compression_codec
-      compression_threshold
-      connect_timeout
-      delivery_interval
-      delivery_threshold
-      max_buffer_bytesize
-      max_buffer_size
-      max_queue_size
-      max_retries
-      required_acks
-      retry_backoff
-      socket_timeout
-      ssl_ca_cert
-      ssl_client_cert
-      ssl_client_cert_key
-    ]
+  class Config < KingKonf::Config
+    prefix :delivery_boy
 
-    DEFAULTS = {
-      ack_timeout: 5,
-      brokers: ["localhost:9092"],
-      client_id: "delivery_boy",
-      compression_threshold: 1,
-      connect_timeout: 10,
-      max_buffer_bytesize: 10_000_000,
-      max_buffer_size: 1000,
-      max_retries: 2,
-      required_acks: :all,
-      retry_backoff: 1,
-      socket_timeout: 30,
-      delivery_interval: 10,
-      delivery_threshold: 100,
-      max_queue_size: 1000,
-    }
-
-    attr_accessor(*VARIABLES)
-
-    def initialize(env: {})
-      load_config(DEFAULTS)
-      load_env(env)
-    end
-
-    def load_file(path, environment)
-      loader = ConfigFileLoader.new(self)
-      loader.load_file(path, environment)
-    end
-
-    def get(variable)
-      public_send(variable)
-    end
-
-    def set(variable, value)
-      unless VARIABLES.include?(variable.to_s)
-        raise ConfigError, "unknown configuration variable #{variable}"
-      end
-
-      instance_variable_set("@#{variable}", value)
-    end
-
-    private
-
-    def load_config(config)
-      config.each do |variable, value|
-        set(variable, value)
-      end
-    end
-
-    def load_env(env)
-      loader = EnvConfigLoader.new(env, self)
-
-      loader.string :client_id
-      loader.string_list :brokers
-      loader.integer :ack_timeout
-      loader.symbol :compression_codec
-      loader.integer :compression_threshold
-      loader.integer :connect_timeout
-      loader.integer :delivery_interval
-      loader.integer :delivery_threshold
-      loader.integer :max_buffer_bytesize
-      loader.integer :max_buffer_size
-      loader.integer :max_queue_size
-      loader.integer :max_retries
-      loader.integer :required_acks
-      loader.integer :retry_backoff
-      loader.integer :socket_timeout
-      loader.string :ssl_ca_cert
-      loader.string :ssl_client_cert
-      loader.string :ssl_client_cert_key
-
-      loader.validate!
-    end
+    integer :ack_timeout, default: 5
+    integer :compression_threshold, default: 1
+    integer :connect_timeout, default: 10
+    integer :delivery_interval, default: 10
+    integer :delivery_threshold, default: 100
+    integer :max_buffer_bytesize, default: 10_000_000
+    integer :max_buffer_size, default: 1000
+    integer :max_queue_size, default: 1000
+    integer :max_retries, default: 2
+    integer :required_acks, default: -1
+    integer :retry_backoff, default: 1
+    integer :socket_timeout, default: 30
+    string :client_id, default: "delivery_boy"
+    string :compression_codec, default: nil
+    string :ssl_ca_cert, default: nil
+    string :ssl_client_cert, default: nil
+    string :ssl_client_cert_key, default: nil
+    list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
   end
 end

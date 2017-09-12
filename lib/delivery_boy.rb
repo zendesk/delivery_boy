@@ -70,6 +70,8 @@ module DeliveryBoy
     # @return [DeliveryBoy::Config]
     def config
       @config ||= DeliveryBoy::Config.new(env: ENV)
+    rescue KingKonf::ConfigError => e
+      raise ConfigError, e.message
     end
 
     def test_mode!
