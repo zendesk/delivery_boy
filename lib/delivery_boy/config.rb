@@ -75,6 +75,7 @@ module DeliveryBoy
     def load_env(env)
       loader = EnvConfigLoader.new(env, self)
 
+      loader.string :client_id
       loader.string_list :brokers
       loader.integer :ack_timeout
       loader.symbol :compression_codec
