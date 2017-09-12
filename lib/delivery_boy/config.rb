@@ -22,5 +22,11 @@ module DeliveryBoy
     string :ssl_client_cert, default: nil
     string :ssl_client_cert_key, default: nil
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
+
+    boolean :datadog_enabled
+    string :datadog_host
+    integer :datadog_port
+    string :datadog_namespace
+    list :datadog_tags
   end
 end
