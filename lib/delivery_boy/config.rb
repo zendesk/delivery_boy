@@ -56,6 +56,10 @@ module DeliveryBoy
       loader.load_file(path, environment)
     end
 
+    def get(variable)
+      public_send(variable)
+    end
+
     def set(variable, value)
       unless VARIABLES.include?(variable.to_s)
         raise ConfigError, "unknown configuration variable #{variable}"
