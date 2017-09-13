@@ -10,6 +10,7 @@ describe DeliveryBoy do
       messages = DeliveryBoy.testing.messages_for("greetings")
 
       expect(messages.count).to eq 1
+      expect(messages.first.value).to eq "hello"
     end
   end
 end

@@ -2,14 +2,14 @@ module DeliveryBoy
 
   # A fake implementation that is useful for testing.
   class Fake
-    FakeMessage = Struct.new(:value, :key, :topic, :partition, :partition_key)
+    FakeMessage = Struct.new(:value, :topic, :key, :partition, :partition_key)
 
     def initialize
       @messages = Hash.new {|h, k| h[k] = [] }
     end
 
-    def deliver(value, topic:, **options)
-      message = FakeMessage.new(value: value, topic: topic, **options)
+    def deliver(value, topic:, key: nil, partition: nil, partition_key: nil)
+      message = FakeMessage.new(value, topic, key, partition, partition_key)
       @messages[topic] << message
 
       nil
