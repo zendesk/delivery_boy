@@ -167,6 +167,39 @@ A PEM encoded client cert to use with an SSL connection. Must be used in combina
 
 A PEM encoded client cert key to use with an SSL connection. Must be used in combination with `ssl_client_cert`.
 
+### Testing
+
+DeliveryBoy provides a test mode out of the box. When this mode is enabled, messages will be stored in memory rather than being sent to Kafka. You will typically want to do this in your test helper, e.g. in RSpec:
+
+```ruby
+# spec/spec_helper.rb
+require "delivery_boy/rspec"
+```
+
+Now your application can use DeliveryBoy in tests without connecting to an actual Kafka cluster. Asserting that messages have been delivered is simple:
+
+```ruby
+describe PostsController do
+  describe "#show" do
+    it "emits an event to Kafka" do
+      post = Post.create!(body: "hello")
+      
+      get :show, id: post.id
+      
+      # Use this API to extract all messages written to a Kafka topic.
+      messages = DeliveryBoy.testing.messages_for("post_views")
+      
+      expect(messages.count).to eq 1
+      
+      # In addition to #value, you can also pull out #key and #partition_key.
+      event = JSON.parse(messages.first.value)
+      
+      expect(event["post_id"]).to eq post.id
+    end
+  end
+end
+```
+
 ### Instrumentation & monitoring
 
 Since DeliveryBoy is just an opinionated API on top of ruby-kafka, you can use all the [instrumentation made available by that library](https://github.com/zendesk/ruby-kafka#instrumentation). You can also use the [existing monitoring solutions](https://github.com/zendesk/ruby-kafka#monitoring) that integrate with various monitoring services.
