@@ -202,7 +202,7 @@ end
 
 This takes care of clearing messages after each example, as well.
 
-If you're not using RSpec, you can easily replicate the functionality yourself. Call `DeliveryBoy.test_mode` at load time, and make sure that `DeliveryBoy.testing.clear` is called after each test.
+If you're not using RSpec, you can easily replicate the functionality yourself. Call `DeliveryBoy.test_mode!` at load time, and make sure that `DeliveryBoy.testing.clear` is called after each test.
 
 ### Instrumentation & monitoring
 
