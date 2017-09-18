@@ -18,9 +18,15 @@ module DeliveryBoy
     alias deliver_async! deliver
 
     def shutdown
+      clear
+    end
+
+    # Clear all messages stored in memory.
+    def clear
       @messages.clear
     end
 
+    # Return all messages written to the specified topic.
     def messages_for(topic)
       @messages[topic]
     end
