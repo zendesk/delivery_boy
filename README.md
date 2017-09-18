@@ -169,7 +169,7 @@ A PEM encoded client cert key to use with an SSL connection. Must be used in com
 
 ### Testing
 
-DeliveryBoy provides a test mode out of the box. When this mode is enabled, messages will be stored in memory rather than being sent to Kafka. You will typically want to do this in your test helper, e.g. in RSpec:
+DeliveryBoy provides a test mode out of the box. When this mode is enabled, messages will be stored in memory rather than being sent to Kafka. If you use RSpec, enabling test mode is as easy as adding this to your spec helper:
 
 ```ruby
 # spec/spec_helper.rb
@@ -199,6 +199,10 @@ describe PostsController do
   end
 end
 ```
+
+This takes care of clearing messages after each example, as well.
+
+If you're not using RSpec, you can easily replicate the functionality yourself. Call `DeliveryBoy.test_mode` at load time, and make sure that `DeliveryBoy.testing.clear` is called after each test.
 
 ### Instrumentation & monitoring
 
