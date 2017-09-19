@@ -11,4 +11,11 @@ RSpec.describe DeliveryBoy::Instance do
       instance.deliver("hello", topic: "greetings")
     end
   end
+
+  describe "#deliver_async" do
+    it "delivers a message to Kafka asynchronously" do
+      instance.deliver("hello", topic: "greetings")
+      instance.shutdown
+    end
+  end
 end
