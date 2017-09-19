@@ -18,9 +18,18 @@ module DeliveryBoy
     integer :socket_timeout, default: 30
     string :client_id, default: "delivery_boy"
     string :compression_codec, default: nil
+
     string :ssl_ca_cert, default: nil
+    string :ssl_ca_cert_file_path
     string :ssl_client_cert, default: nil
     string :ssl_client_cert_key, default: nil
+
+    string :sasl_gssapi_principal
+    string :sasl_gssapi_keytab
+    string :sasl_plain_authzid
+    string :sasl_plain_username
+    string :sasl_plain_password
+
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
 
     boolean :datadog_enabled

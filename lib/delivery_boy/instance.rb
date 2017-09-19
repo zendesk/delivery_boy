@@ -64,8 +64,14 @@ module DeliveryBoy
         connect_timeout: config.connect_timeout,
         socket_timeout: config.socket_timeout,
         ssl_ca_cert: config.ssl_ca_cert,
+        ssl_ca_cert_file_path: config.ssl_ca_cert_file_path,
         ssl_client_cert: config.ssl_client_cert,
         ssl_client_cert_key: config.ssl_client_cert_key,
+        sasl_gssapi_principal: config.sasl_gssapi_principal,
+        sasl_gssapi_keytab: config.sasl_gssapi_keytab,
+        sasl_plain_authzid: config.sasl_plain_authzid,
+        sasl_plain_username: config.sasl_plain_username,
+        sasl_plain_password: config.sasl_plain_password,
       )
     end
 
