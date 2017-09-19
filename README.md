@@ -151,13 +151,17 @@ The maximum number of messages allowed in the buffer before new messages are rej
 
 The maximum number of messages allowed in the queue before new messages are rejected. The queue is used to ferry messages from the foreground threads of your application to the background thread that buffers and delivers messages. You typically only want to increase this number if you have a very high throughput of messages and the background thread can't keep up with spikes in throughput.
 
-#### Authentication and authorization
+#### SSL Authentication and authorization
 
-See [ruby-kafka](https://github.com/zendesk/ruby-kafka#security) for more information.
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#encryption-and-authentication-using-ssl) for more information.
 
 ##### `ssl_ca_cert`
 
 A PEM encoded CA cert, or an Array of PEM encoded CA certs, to use with an SSL connection.
+
+##### `ssl_ca_cert_file_path`
+
+The path to a valid SSL certificate authority file.
 
 ##### `ssl_client_cert`
 
@@ -166,6 +170,32 @@ A PEM encoded client cert to use with an SSL connection. Must be used in combina
 ##### `ssl_client_cert_key`
 
 A PEM encoded client cert key to use with an SSL connection. Must be used in combination with `ssl_client_cert`.
+
+#### SASL Authentication and authorization
+
+See [ruby-kafka](https://github.com/zendesk/ruby-kafka#authentication-using-sasl) for more information.
+
+Use either `sasl_gssapi_*` _or_ `sasl_plain_*`, not both.
+
+##### `sasl_gssapi_principal`
+
+The GSSAPI principal.
+
+##### `sasl_gssapi_keytab`
+
+Optional GSSAPI keytab.
+
+##### `sasl_plain_authzid`
+
+The authorization identity to use.
+
+##### `sasl_plain_username`
+
+The username used to authenticate.
+
+##### `sasl_plain_password`
+
+The password used to authenticate.
 
 ### Testing
 
