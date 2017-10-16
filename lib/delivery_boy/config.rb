@@ -2,7 +2,7 @@ require "king_konf"
 
 module DeliveryBoy
   class Config < KingKonf::Config
-    prefix :delivery_boy
+    env_prefix :delivery_boy
 
     # Basic
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
