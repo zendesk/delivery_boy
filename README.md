@@ -64,9 +64,9 @@ Both `deliver` and `deliver_async` take the following options:
 * `topic` – the Kafka topic that should be written to (required).
 * `key` – the key that should be set on the Kafka message (optional).
 * `partition` – a specific partition number that should be written to (optional).
-* `partition_key` – a string that can be used to deterministically select the partition that should by written to (optional).
+* `partition_key` – a string that can be used to deterministically select the partition that should be written to (optional).
 
-Regarding `partition` and `partition_key`: if none are specified, DeliveryBoy will pick a partition at random. If you want to ensure that e.g. all messages related to a user always get written to the same partition, you can pass the user id to `partition_key`. Don't use `partition` directly unless you know what you're doing, since it requires you do know exactly how many partitions each topic has, which can change and cause you pain and misery. Just use `partition_key` or let DeliveryBoy choose at random.
+Regarding `partition` and `partition_key`: if none are specified, DeliveryBoy will pick a partition at random. If you want to ensure that e.g. all messages related to a user always get written to the same partition, you can pass the user id to `partition_key`. Don't use `partition` directly unless you know what you're doing, since it requires you to know exactly how many partitions each topic has, which can change and cause you pain and misery. Just use `partition_key` or let DeliveryBoy choose at random.
 
 ### Configuration
 
