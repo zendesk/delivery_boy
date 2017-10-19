@@ -70,7 +70,7 @@ Regarding `partition` and `partition_key`: if none are specified, DeliveryBoy wi
 
 ### Configuration
 
-You configure DeliveryBoy either through a config file or by setting environment variables.
+You configure DeliveryBoy in three different ways: in a YAML config file, in a Ruby config file, or by setting environment variables.
 
 If you're using Rails, the fastest way to get started is to execute the following in your terminal:
 
@@ -80,7 +80,16 @@ $ bundle exec rails generate delivery_boy:install
 
 This will create a config file at `config/delivery_boy.yml` with configurations for each of your Rails environments. Open that file in order to make changes.
 
-Note that for most configuration variables, you can pass in an environment variable. These environment variables all take the form `DELIVERY_BOY_X`, where `X` is the upper-case configuration variable name, e.g. `DELIVERY_BOY_CLIENT_ID`.
+Note that for all configuration variables, you can pass in an environment variable. These environment variables all take the form `DELIVERY_BOY_X`, where `X` is the upper-case configuration variable name, e.g. `DELIVERY_BOY_CLIENT_ID`.
+
+You can also configure DeliveryBoy in Ruby if you prefer that. By default, the file `config/delivery_boy.rb` is loaded if present, but you can do this from anywhere – just call `DeliveryBoy.configure` like so:
+
+```ruby
+DeliveryBoy.configure do |config|
+  config.client_id = "yolo"
+  # ...
+end
+```
 
 The following configuration variables can be set:
 
