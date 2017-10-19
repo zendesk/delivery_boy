@@ -2,10 +2,13 @@ module DeliveryBoy
   class Railtie < Rails::Railtie
     initializer "delivery_boy.load_config" do
       config = DeliveryBoy.config
-      config_file = "config/delivery_boy.yml"
 
-      if File.exist?(config_file)
-        config.load_file(config_file, Rails.env)
+      if File.exist?("config/delivery_boy.yml")
+        config.load_file("config/delivery_boy.yml", Rails.env)
+      end
+
+      if File.exist?("config/delivery_boy.rb")
+        require "config/delivery_boy"
       end
 
       if config.datadog_enabled

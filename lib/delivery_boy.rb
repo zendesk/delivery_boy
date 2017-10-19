@@ -74,6 +74,18 @@ module DeliveryBoy
       raise ConfigError, e.message
     end
 
+    # Configure DeliveryBoy in a block.
+    #
+    #     DeliveryBoy.configure do |config|
+    #       config.client_id = "yolo"
+    #     end
+    #
+    # @yield [DeliveryBoy::Config]
+    # @return [nil]
+    def configure
+      yield config
+    end
+
     def test_mode!
       @instance = testing
     end
