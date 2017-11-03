@@ -84,7 +84,7 @@ module DeliveryBoy
         retry_backoff: config.retry_backoff,
         max_buffer_size: config.max_buffer_size,
         max_buffer_bytesize: config.max_buffer_bytesize,
-        compression_codec: config.compression_codec.to_sym if config.compression_codec,
+        compression_codec: (config.compression_codec.to_sym if config.compression_codec),
         compression_threshold: config.compression_threshold,
       }
     end
