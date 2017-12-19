@@ -72,6 +72,9 @@ module DeliveryBoy
         sasl_plain_authzid: config.sasl_plain_authzid,
         sasl_plain_username: config.sasl_plain_username,
         sasl_plain_password: config.sasl_plain_password,
+        sasl_scram_username: config.sasl_scram_username,
+        sasl_scram_password: config.sasl_scram_password,
+        sasl_scram_mechanism: config.sasl_scram_mechanism,
       )
     end
 
