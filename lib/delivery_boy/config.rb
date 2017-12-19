@@ -41,6 +41,9 @@ module DeliveryBoy
     string :sasl_plain_authzid
     string :sasl_plain_username
     string :sasl_plain_password
+    string :sasl_scram_username
+    string :sasl_scram_password
+    string :sasl_scram_mechanism
 
     # Datadog monitoring
     boolean :datadog_enabled
