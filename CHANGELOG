@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+## v0.2.4
+
+* Add support for SASL SCRAM
+
 ## v0.2.0
 
 * Add a test mode
