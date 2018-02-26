@@ -5,7 +5,7 @@ module DeliveryBoy
     env_prefix :delivery_boy
 
     # Basic
-    list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
+    list :brokers, items: :string, sep: ",", default: [ENV['KAFKA_HOST']]
     string :client_id, default: "delivery_boy"
 
     # Buffering
@@ -34,6 +34,7 @@ module DeliveryBoy
     string :ssl_ca_cert_file_path
     string :ssl_client_cert, default: nil
     string :ssl_client_cert_key, default: nil
+    boolean :ssl_ca_certs_from_system, default: false
 
     # SASL authentication
     string :sasl_gssapi_principal
