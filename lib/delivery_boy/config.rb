@@ -5,7 +5,7 @@ module DeliveryBoy
     env_prefix :delivery_boy
 
     # Basic
-    list :brokers, items: :string, sep: ",", default: ['localhost:9092']
+    list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
     string :client_id, default: "delivery_boy"
 
     # Buffering
