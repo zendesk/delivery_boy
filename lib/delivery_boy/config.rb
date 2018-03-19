@@ -39,7 +39,7 @@ module DeliveryBoy
     # SASL authentication
     string :sasl_gssapi_principal
     string :sasl_gssapi_keytab
-    string :sasl_plain_authzid
+    string :sasl_plain_authzid, default: ''
     string :sasl_plain_username
     string :sasl_plain_password
     string :sasl_scram_username
