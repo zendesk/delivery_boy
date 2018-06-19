@@ -2,7 +2,11 @@
 
 ## Unreleased
 
+## v0.2.7
+
 * Support for ssl_ca_certs_from_system #18
+* Interface synchronisation in test #24
+* Fixed error for require in railtie.rb #23
 
 ## v0.2.4
 
