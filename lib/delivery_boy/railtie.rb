@@ -8,7 +8,7 @@ module DeliveryBoy
       end
 
       if File.exist?("config/delivery_boy.rb")
-        require "config/delivery_boy"
+        require "./config/delivery_boy"
       end
 
       if config.datadog_enabled
