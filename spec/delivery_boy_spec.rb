@@ -1,6 +1,6 @@
 require "delivery_boy"
 
-describe DeliveryBoy do
+RSpec.describe DeliveryBoy do
   describe ".deliver_async" do
     it "delivers the message using .deliver_async!" do
       DeliveryBoy.test_mode!
