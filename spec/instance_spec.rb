@@ -1,8 +1,7 @@
 require "delivery_boy"
 
 RSpec.describe DeliveryBoy::Instance do
-  let(:log) { StringIO.new }
-  let(:logger) { Logger.new(log) }
+  let(:logger) { Logger.new($stderr) }
   let(:config) { DeliveryBoy::Config.new }
   let(:instance) { DeliveryBoy::Instance.new(config, logger) }
 
