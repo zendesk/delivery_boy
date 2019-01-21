@@ -6,6 +6,7 @@ module DeliveryBoy
     def initialize(config, logger)
       @config = config
       @logger = logger
+      @async_producer = nil
     end
 
     def deliver(value, topic:, **options)
