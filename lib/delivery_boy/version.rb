@@ -1,3 +1,3 @@
 module DeliveryBoy
-  VERSION = "0.2.7"
+  VERSION = "0.2.8.beta1"
 end
