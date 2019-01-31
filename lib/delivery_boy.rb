@@ -86,6 +86,14 @@ module DeliveryBoy
       yield config
     end
 
+    def with_test_mode(&block)
+      prev_instance = @instance
+      test_mode!
+      block.call
+    ensure
+      @instance = prev_instance
+    end
+
     def test_mode!
       @instance = testing
     end
