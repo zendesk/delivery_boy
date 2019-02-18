@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Support `log_level` config option.
+
 ## v0.2.8
 
 * Upgrade dependency on KingKonf.

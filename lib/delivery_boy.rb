@@ -60,7 +60,11 @@ module DeliveryBoy
     #
     # @return [Logger]
     def logger
-      @logger ||= Logger.new($stdout)
+      @logger ||= Logger.new($stdout).tap do |logger|
+        if config.log_level
+          logger.level = Object.const_get("Logger::#{config.log_level.upcase}")
+        end
+      end
     end
 
     attr_writer :logger
