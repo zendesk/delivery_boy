@@ -103,6 +103,10 @@ A list of Kafka brokers that should be used to initialize the client. Defaults t
 
 This is how the client will identify itself to the Kafka brokers. Default is `delivery_boy`.
 
+##### `log_level`
+
+The log level for the logger.
+
 #### Message delivery
 
 ##### `delivery_interval`
@@ -231,17 +235,17 @@ describe PostsController do
   describe "#show" do
     it "emits an event to Kafka" do
       post = Post.create!(body: "hello")
-      
+
       get :show, id: post.id
-      
+
       # Use this API to extract all messages written to a Kafka topic.
       messages = DeliveryBoy.testing.messages_for("post_views")
-      
+
       expect(messages.count).to eq 1
-      
+
       # In addition to #value, you can also pull out #key and #partition_key.
       event = JSON.parse(messages.first.value)
-      
+
       expect(event["post_id"]).to eq post.id
     end
   end
