@@ -46,6 +46,7 @@ module DeliveryBoy
     string :sasl_scram_username
     string :sasl_scram_password
     string :sasl_scram_mechanism
+    boolean :sasl_over_ssl, default: true
 
     # Datadog monitoring
     boolean :datadog_enabled
