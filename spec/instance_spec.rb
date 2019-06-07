@@ -17,4 +17,11 @@ RSpec.describe DeliveryBoy::Instance do
       instance.shutdown
     end
   end
+
+  describe "#produce and #deliver_messages" do
+    it "produces and delivers a message to kafka" do
+      instance.produce("hello", topic: "greeting")
+      instance.deliver_messages
+    end
+  end
 end

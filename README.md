@@ -59,7 +59,34 @@ end
 
 In addition to improving response time, delivering messages asynchronously also protects your application against Kafka availability issues -- if messages cannot be delivered, they'll be buffered for later and retried automatically.
 
-Both `deliver` and `deliver_async` take the following options:
+A third method is to produce messages first (without delivering the messages to Kafka yet), and deliver them synchronously later.
+
+```ruby
+ # app/controllers/comments_controller.rb
+ class CommentsController < ApplicationController
+   def create
+     @comment = Comment.create!(params)
+     
+     event = {
+       name: "comment_created",
+       data: {
+         comment_id: @comment.id
+         user_id: current_user.id
+       }
+     }
+     
+     # This will queue the two messages in the internal buffer.
+     DeliveryBoy.produce(comment.to_json, topic: "comments")
+     DeliveryBoy.produce(event.to_json, topic: "activity")
+     
+     # This will deliver all messages in the buffer to Kafka.
+     # This call is blocking. 
+     DeliveryBoy.deliver_messages
+   end
+ end
+```
+
+The methods `deliver`, `deliver_async` and `produce` take the following options:
 
 * `topic` – the Kafka topic that should be written to (required).
 * `key` – the key that should be set on the Kafka message (optional).

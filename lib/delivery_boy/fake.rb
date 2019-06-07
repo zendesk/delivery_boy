@@ -10,6 +10,7 @@ module DeliveryBoy
 
     def initialize
       @messages = Hash.new {|h, k| h[k] = [] }
+      @buffer = Hash.new {|h, k| h[k] = [] }
       @delivery_lock = Mutex.new
     end
 
@@ -26,6 +27,26 @@ module DeliveryBoy
 
     alias deliver_async! deliver
 
+    def produce(value, topic:, key: nil, partition: nil, partition_key: nil, create_time: Time.now)
+      @delivery_lock.synchronize do
+        offset = @buffer[topic].count
+        message = FakeMessage.new(value, topic, key, offset, partition, partition_key, create_time)
+
+        @buffer[topic] << message
+      end
+
+      nil
+    end
+
+    def deliver_messages
+      @delivery_lock.synchronize do
+        @buffer.each do |topic, messages|
+          @messages[topic].push(*messages)
+        end
+        @buffer.clear
+      end
+    end
+
     def shutdown
       clear
     end
@@ -34,6 +55,7 @@ module DeliveryBoy
     def clear
       @delivery_lock.synchronize do
         @messages.clear
+        @buffer.clear
       end
     end
 

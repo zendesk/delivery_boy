@@ -28,6 +28,14 @@ module DeliveryBoy
       async_producer.shutdown if async_producer?
     end
 
+    def produce(value, topic:, **options)
+      sync_producer.produce(value, topic: topic, **options)
+    end
+
+    def deliver_messages
+      sync_producer.deliver_messages
+    end
+
     private
 
     attr_reader :config, :logger

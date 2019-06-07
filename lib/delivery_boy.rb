@@ -47,6 +47,39 @@ module DeliveryBoy
       instance.deliver_async!(value, topic: topic, **options)
     end
 
+    # Like {.produce!}, but handles +Kafka::BufferOverflow+ errors
+    # by logging them and just going on with normal business.
+    #
+    # @return [nil]
+    def produce(value, topic:, **options)
+      produce!(value, topic: topic, **options)
+    rescue Kafka::BufferOverflow
+      logger.error "Message for `#{topic}` dropped due to buffer overflow"
+    end
+
+    # Appends the given message to the producer buffer but does not send it until {.deliver_messages} is called.
+    #
+    # @param value [String] the message value.
+    # @param topic [String] the topic that the message should be written to.
+    # @param key [String, nil] the message key.
+    # @param partition [Integer, nil] the topic partition that the message should
+    #   be written to.
+    # @param partition_key [String, nil] a key used to deterministically assign
+    #   a partition to the message.
+    # @return [nil]
+    # @raise [Kafka::BufferOverflow] if the producer's buffer is full.
+    def produce!(value, topic:, **options)
+      instance.produce(value, topic: topic, **options)
+    end
+
+    # Delivers the items currently in the producer buffer.
+    #
+    # @return [nil]
+    # @raise [Kafka::DeliveryFailed] if delivery failed for some reason.
+    def deliver_messages
+      instance.deliver_messages
+    end
+
     # Shut down DeliveryBoy.
     #
     # Automatically called when the process exits.
