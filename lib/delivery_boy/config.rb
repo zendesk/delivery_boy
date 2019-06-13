@@ -36,6 +36,7 @@ module DeliveryBoy
     string :ssl_client_cert, default: nil
     string :ssl_client_cert_key, default: nil
     boolean :ssl_ca_certs_from_system, default: false
+    boolean :ssl_verify_hostname, default: true
 
     # SASL authentication
     string :sasl_gssapi_principal
