@@ -2,10 +2,10 @@
 
 ## Unreleased
 
-* Support `log_level` config option.
-
 ## v0.2.8
 
+* Support `log_level` config option.
+* Support for ssl_verify_hostname in the configuration (#44)
 * Upgrade dependency on KingKonf.
 * Allow configuring `sasl_over_ssl`.
 
