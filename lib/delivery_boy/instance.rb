@@ -14,7 +14,7 @@ module DeliveryBoy
       sync_producer.deliver_messages
     rescue
       # Make sure to clear any buffered messages if there's an error.
-      sync_producer.clear_buffer
+      clear_buffer
 
       raise
     end
@@ -34,6 +34,10 @@ module DeliveryBoy
 
     def deliver_messages
       sync_producer.deliver_messages
+    end
+
+    def clear_buffer
+      sync_producer.clear_buffer
     end
 
     private
