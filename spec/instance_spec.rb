@@ -24,4 +24,11 @@ RSpec.describe DeliveryBoy::Instance do
       instance.deliver_messages
     end
   end
+
+  describe "#clear_buffer" do
+    it "clears the buffer" do
+      instance.produce("hello", topic: "greetings")
+      instance.clear_buffer
+    end
+  end
 end

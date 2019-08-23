@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Add `DeliveryBoy.clear_buffer` method.
+
 ## v0.2.8
 
 * Support `log_level` config option.
