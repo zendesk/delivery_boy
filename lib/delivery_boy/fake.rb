@@ -2,7 +2,7 @@ module DeliveryBoy
 
   # A fake implementation that is useful for testing.
   class Fake
-    FakeMessage = Struct.new(:value, :topic, :key, :offset, :partition, :partition_key, :create_time) do
+    FakeMessage = Struct.new(:value, :topic, :key, :headers, :offset, :partition, :partition_key, :create_time) do
       def bytesize
         key.to_s.bytesize + value.to_s.bytesize
       end
@@ -14,10 +14,10 @@ module DeliveryBoy
       @delivery_lock = Mutex.new
     end
 
-    def deliver(value, topic:, key: nil, partition: nil, partition_key: nil, create_time: Time.now)
+    def deliver(value, topic:, key: nil, headers: {}, partition: nil, partition_key: nil, create_time: Time.now)
       @delivery_lock.synchronize do
         offset = @messages[topic].count
-        message = FakeMessage.new(value, topic, key, offset, partition, partition_key, create_time)
+        message = FakeMessage.new(value, topic, key, headers, offset, partition, partition_key, create_time)
 
         @messages[topic] << message
       end
@@ -27,10 +27,10 @@ module DeliveryBoy
 
     alias deliver_async! deliver
 
-    def produce(value, topic:, key: nil, partition: nil, partition_key: nil, create_time: Time.now)
+    def produce(value, topic:, key: nil, headers: {}, partition: nil, partition_key: nil, create_time: Time.now)
       @delivery_lock.synchronize do
         offset = @buffer[topic].count
-        message = FakeMessage.new(value, topic, key, offset, partition, partition_key, create_time)
+        message = FakeMessage.new(value, topic, key, headers, offset, partition, partition_key, create_time)
 
         @buffer[topic] << message
       end
