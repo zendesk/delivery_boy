@@ -25,6 +25,9 @@ module DeliveryBoy
     integer :max_retries, default: 2
     integer :required_acks, default: -1
     integer :retry_backoff, default: 1
+    boolean :idempotent, default: false
+    boolean :transactional, default: false
+    integer :transactional_timeout, default: 60
 
     # Compression
     integer :compression_threshold, default: 1
