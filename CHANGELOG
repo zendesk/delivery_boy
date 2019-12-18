@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+## v1.0.0
 
 * Add `DeliveryBoy.clear_buffer` method.
+* Support exactly once delivery and transactional messaging (#50)
+* Check that Rails::Railtie is defined (#48)
 
 ## v0.2.8
 
