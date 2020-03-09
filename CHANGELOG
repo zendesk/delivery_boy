@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.1
+
+* Require ruby-kafka v1.0 or higher.
+
 ## v1.0.0
 
 * Add `DeliveryBoy.clear_buffer` method.
