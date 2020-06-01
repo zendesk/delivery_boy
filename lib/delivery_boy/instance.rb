@@ -80,6 +80,7 @@ module DeliveryBoy
         ssl_ca_cert_file_path: config.ssl_ca_cert_file_path,
         ssl_client_cert: config.ssl_client_cert,
         ssl_client_cert_key: config.ssl_client_cert_key,
+        ssl_client_cert_key_password: config.ssl_client_cert_key_password,
         ssl_ca_certs_from_system: config.ssl_ca_certs_from_system,
         ssl_verify_hostname: config.ssl_verify_hostname,
         sasl_gssapi_principal: config.sasl_gssapi_principal,

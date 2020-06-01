@@ -38,6 +38,7 @@ module DeliveryBoy
     string :ssl_ca_cert_file_path
     string :ssl_client_cert, default: nil
     string :ssl_client_cert_key, default: nil
+    string :ssl_client_cert_key_password, default: nil
     boolean :ssl_ca_certs_from_system, default: false
     boolean :ssl_verify_hostname, default: true
 

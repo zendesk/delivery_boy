@@ -220,6 +220,10 @@ A PEM encoded client cert to use with an SSL connection. Must be used in combina
 
 A PEM encoded client cert key to use with an SSL connection. Must be used in combination with `ssl_client_cert`.
 
+##### `ssl_client_cert_key_password`
+
+A password for PEM encoded client cert to use with an SSL connection.
+
 #### SASL Authentication and authorization
 
 See [ruby-kafka](https://github.com/zendesk/ruby-kafka#authentication-using-sasl) for more information.
