@@ -85,6 +85,11 @@ module DeliveryBoy
       instance.clear_buffer
     end
 
+    # Return the number of messages in the buffer
+    def buffer_size
+      instance.buffer_size
+    end
+
     # Shut down DeliveryBoy.
     #
     # Automatically called when the process exits.

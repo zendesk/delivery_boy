@@ -40,6 +40,10 @@ module DeliveryBoy
       sync_producer.clear_buffer
     end
 
+    def buffer_size
+      sync_producer.buffer_size
+    end
+
     private
 
     attr_reader :config, :logger
