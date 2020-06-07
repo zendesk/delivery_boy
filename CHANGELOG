@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* Support for `ssl_client_cert_key_password` in the configuration (#52)
+
 ## v1.0.1
 
 * Require ruby-kafka v1.0 or higher.
