@@ -222,7 +222,7 @@ A PEM encoded client cert key to use with an SSL connection. Must be used in com
 
 ##### `ssl_client_cert_key_password`
 
-A password for PEM encoded client cert to use with an SSL connection.
+The password required to read the ssl_client_cert_key. Must be used in combination with ssl_client_cert_key.
 
 #### SASL Authentication and authorization
 
