@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Support for `ssl_client_cert_key_password` in the configuration (#52)
+* Add `DeliveryBoy.buffer_size` to return the number of messages in the buffer
 
 ## v1.0.1
 
