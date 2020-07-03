@@ -51,6 +51,18 @@ module DeliveryBoy
       clear
     end
 
+    def clear_buffer
+      @delivery_lock.synchronize do
+        @buffer.clear
+      end
+    end
+
+    def buffer_size
+      @delivery_lock.synchronize do
+        @buffer.values.flatten.size
+      end
+    end
+
     # Clear all messages stored in memory.
     def clear
       @delivery_lock.synchronize do
