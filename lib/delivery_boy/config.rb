@@ -7,6 +7,7 @@ module DeliveryBoy
     # Basic
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
     string :client_id, default: "delivery_boy"
+    string :client_secret
     string :log_level, default: nil
 
     # Buffering
@@ -51,6 +52,8 @@ module DeliveryBoy
     string :sasl_scram_username
     string :sasl_scram_password
     string :sasl_scram_mechanism
+    string :sasl_oauth_token_provider
+    string :sasl_oauth_token_url
     boolean :sasl_over_ssl, default: true
 
     # Datadog monitoring
