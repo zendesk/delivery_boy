@@ -1,4 +1,5 @@
 # DeliveryBoy
+![repo-checks](https://github.com/zendesk/delivery_boy/workflows/repo-checks/badge.svg)
 
 This library provides a dead easy way to start publishing messages to a Kafka cluster from your Ruby or Rails application!
 
