@@ -1,0 +1,24 @@
+name: repo-checks
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+jobs:
+  main:
+    name: ruby
+    runs-on: [self-hosted, zendesk-stable]
+    steps:
+    - uses: zendesk/checkout@v2
+    - uses: zendesk/setup-ruby@v1
+    - name: gem_cache
+      id: cache
+      uses: zendesk/cache@v2
+      with:
+        path: vendor/bundle
+        key: cache-${{ runner.os }}-ruby-${{ hashFiles('Gemfile.lock') }}
+    - name: ${{ matrix.task }}
+      run: |
+        gem install bundler -v 1.15.3
+        bundle install
+        bundle exec rake
