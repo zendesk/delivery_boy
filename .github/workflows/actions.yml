@@ -8,6 +8,41 @@ jobs:
   main:
     name: ruby
     runs-on: ubuntu-latest
+    services:
+      zookeeper:
+        image: wurstmeister/zookeeper
+        ports:
+          - 2181:2181
+      kafka1:
+        image: wurstmeister/kafka:2.11-2.0.0
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_ADVERTISED_HOST_NAME: localhost
+          KAFKA_ADVERTISED_PORT: 9092
+          KAFKA_PORT: 9092
+          KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+          KAFKA_DELETE_TOPIC_ENABLE: true
+      kafka2:
+        image: wurstmeister/kafka:2.11-2.0.0
+        ports:
+          - 9093:9093
+        env:
+          KAFKA_ADVERTISED_HOST_NAME: localhost
+          KAFKA_ADVERTISED_PORT: 9093
+          KAFKA_PORT: 9093
+          KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+          KAFKA_DELETE_TOPIC_ENABLE: true
+      kafka3:
+        image: wurstmeister/kafka:2.11-2.0.0
+        ports:
+          - 9094:9094
+        env:
+          KAFKA_ADVERTISED_HOST_NAME: localhost
+          KAFKA_ADVERTISED_PORT: 9094
+          KAFKA_PORT: 9094
+          KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+          KAFKA_DELETE_TOPIC_ENABLE: true
     steps:
     - uses: zendesk/checkout@v2
     - uses: zendesk/setup-ruby@v1
@@ -18,6 +53,8 @@ jobs:
         path: vendor/bundle
         key: cache-${{ runner.os }}-ruby-${{ hashFiles('Gemfile.lock') }}
     - name: ${{ matrix.task }}
+      env:
+        RACECAR_BROKERS: kafka1:9092,kafka2:9093,kafka3:9094
       run: |
         gem install bundler -v 1.15.3
         bundle install
