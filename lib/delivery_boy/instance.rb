@@ -96,7 +96,7 @@ module DeliveryBoy
         sasl_scram_password: config.sasl_scram_password,
         sasl_scram_mechanism: config.sasl_scram_mechanism,
         sasl_over_ssl: config.sasl_over_ssl,
-        sasl_oauth_token_provider: sasl_oauth_token_provider
+        sasl_oauth_token_provider: config.sasl_oauth_token_provider
       )
     end
 
@@ -115,15 +115,6 @@ module DeliveryBoy
         transactional: config.transactional,
         transactional_timeout: config.transactional_timeout,
       }
-    end
-
-    def sasl_oauth_token_provider
-      return if config.sasl_oauth_token_provider.nil?
-
-      config.sasl_oauth_token_provider
-        .split('::')
-        .reduce(Module, :const_get)
-        .new(config.client_id, config.secret, config.sasl_oauth_token_url)
     end
   end
 end
