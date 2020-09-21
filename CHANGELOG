@@ -6,6 +6,7 @@
 * Add `DeliveryBoy.buffer_size` to return the number of messages in the buffer
 * Add `DeliveryBoy::Fake#clear_buffer` and `DeliveryBoy::Fake#buffer_size` to
 support the public API when using the test helper.
+* Support for `sasl_oauth_token_provider` in the configuration. (#55)
 
 ## v1.0.1
 
