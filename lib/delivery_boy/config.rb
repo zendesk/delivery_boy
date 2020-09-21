@@ -53,6 +53,9 @@ module DeliveryBoy
     string :sasl_scram_mechanism
     boolean :sasl_over_ssl, default: true
 
+    # SASL OAUTHBEARER
+    attr_accessor :sasl_oauth_token_provider
+
     # Datadog monitoring
     boolean :datadog_enabled
     string :datadog_host

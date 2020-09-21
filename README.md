@@ -66,7 +66,7 @@ A third method is to produce messages first (without delivering the messages to 
  class CommentsController < ApplicationController
    def create
      @comment = Comment.create!(params)
-     
+
      event = {
        name: "comment_created",
        data: {
@@ -74,13 +74,13 @@ A third method is to produce messages first (without delivering the messages to 
          user_id: current_user.id
        }
      }
-     
+
      # This will queue the two messages in the internal buffer.
      DeliveryBoy.produce(comment.to_json, topic: "comments")
      DeliveryBoy.produce(event.to_json, topic: "activity")
-     
+
      # This will deliver all messages in the buffer to Kafka.
-     # This call is blocking. 
+     # This call is blocking.
      DeliveryBoy.deliver_messages
    end
  end
@@ -228,7 +228,7 @@ The password required to read the ssl_client_cert_key. Must be used in combinati
 
 See [ruby-kafka](https://github.com/zendesk/ruby-kafka#authentication-using-sasl) for more information.
 
-Use either `sasl_gssapi_*` _or_ `sasl_plain_*`, not both.
+Use it through `GSSAPI`, `PLAIN` _or_ `OAUTHBEARER`.
 
 ##### `sasl_gssapi_principal`
 
@@ -249,6 +249,25 @@ The username used to authenticate.
 ##### `sasl_plain_password`
 
 The password used to authenticate.
+
+##### `sasl_oauth_token_provider`
+
+A instance of a class which implements the `token` method.
+As described in [ruby-kafka](https://github.com/zendesk/ruby-kafka/tree/c3e90bc355fad1e27b9af1048966ff08d3d5735b#oauthbearer)
+
+```ruby
+class TokenProvider
+  def token
+    "oauth-token"
+  end
+end
+
+DeliveryBoy.configure do |config|
+  config.sasl_oauth_token_provider = TokenProvider.new
+  config.ssl_ca_certs_from_system = true
+end
+```
+
 
 ### Testing
 
