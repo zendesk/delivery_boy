@@ -62,4 +62,15 @@ RSpec.describe DeliveryBoy do
       expect(messages[1].create_time).to eq time2
     end
   end
+
+  describe "with invalid config in ENV" do
+    before { ENV["DELIVERY_BOY_ACK_TIMEOUT"] = "true" }
+    after { ENV.delete("DELIVERY_BOY_ACK_TIMEOUT") }
+
+    it "raises ConfigError" do
+      DeliveryBoy.test_mode!
+
+      expect { DeliveryBoy.config }.to raise_error(DeliveryBoy::ConfigError, '"true" is not an integer')
+    end
+  end
 end

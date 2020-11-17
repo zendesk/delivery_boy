@@ -4,6 +4,7 @@ require "delivery_boy/version"
 require "delivery_boy/instance"
 require "delivery_boy/fake"
 require "delivery_boy/config"
+require "delivery_boy/config_error"
 require "delivery_boy/railtie" if defined?(Rails::Railtie)
 
 module DeliveryBoy
