@@ -75,7 +75,7 @@ module DeliveryBoy
 
     def kafka
       @kafka ||= Kafka.new(
-        seed_brokers: config.brokers,
+        config.brokers,
         client_id: config.client_id,
         logger: logger,
         connect_timeout: config.connect_timeout,
