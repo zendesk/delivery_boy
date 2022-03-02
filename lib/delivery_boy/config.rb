@@ -56,6 +56,11 @@ module DeliveryBoy
     # SASL OAUTHBEARER
     attr_accessor :sasl_oauth_token_provider
 
+    # AWS IAM authentication
+    string :sasl_aws_msk_iam_access_key_id
+    string :sasl_aws_msk_iam_secret_key_id
+    string :sasl_aws_msk_iam_aws_region
+
     # Datadog monitoring
     boolean :datadog_enabled
     string :datadog_host
