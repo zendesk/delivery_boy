@@ -99,6 +99,7 @@ module DeliveryBoy
         sasl_oauth_token_provider: config.sasl_oauth_token_provider,
         sasl_aws_msk_iam_access_key_id: config.sasl_aws_msk_iam_access_key_id,
         sasl_aws_msk_iam_secret_key_id: config.sasl_aws_msk_iam_secret_key_id,
+        sasl_aws_msk_iam_session_token: config.sasl_aws_msk_iam_session_token,
         sasl_aws_msk_iam_aws_region: config.sasl_aws_msk_iam_aws_region
       )
     end
