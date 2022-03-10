@@ -60,6 +60,7 @@ module DeliveryBoy
     string :sasl_aws_msk_iam_access_key_id
     string :sasl_aws_msk_iam_secret_key_id
     string :sasl_aws_msk_iam_aws_region
+    string :sasl_aws_msk_iam_session_token, default: nil
 
     # Datadog monitoring
     boolean :datadog_enabled
