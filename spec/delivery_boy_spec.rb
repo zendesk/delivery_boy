@@ -28,12 +28,14 @@ RSpec.describe DeliveryBoy do
     end
   end
 
-  describe ".configure changes config" do
-    DeliveryBoy.configure do |config|
-      config.delivery_interval = 0.05
-    end
+  describe ".configure" do
+    it "allows float for .delivery_interval" do
+      DeliveryBoy.configure do |config|
+        config.delivery_interval = 0.05
+      end
 
-    expect(DeliveryBoy.config.delivery_interval).to eq 0.05
+      expect(DeliveryBoy.config.delivery_interval).to eq 0.05
+    end
   end
 
   describe ".produce and .deliver_messages" do
