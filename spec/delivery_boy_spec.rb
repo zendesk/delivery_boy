@@ -28,6 +28,14 @@ RSpec.describe DeliveryBoy do
     end
   end
 
+  describe ".configure changes config" do
+    DeliveryBoy.configure do |config|
+      config.delivery_interval = 0.05
+    end
+
+    expect(DeliveryBoy.config.delivery_interval).to eq 0.05
+  end
+
   describe ".produce and .deliver_messages" do
     it "does not send produced messages without calling deliver_messages" do
       DeliveryBoy.test_mode!
