@@ -20,7 +20,7 @@ module DeliveryBoy
 
     # Delivery
     integer :ack_timeout, default: 5
-    integer :delivery_interval, default: 10
+    float :delivery_interval, default: 10
     integer :delivery_threshold, default: 100
     integer :max_retries, default: 2
     integer :required_acks, default: -1
