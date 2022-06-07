@@ -267,7 +267,45 @@ DeliveryBoy.configure do |config|
   config.ssl_ca_certs_from_system = true
 end
 ```
+#### AWS MSK IAM Authentication and Authorization
 
+##### sasl_aws_msk_iam_access_key_id
+
+The AWS IAM access key. Required.
+
+##### sasl_aws_msk_iam_secret_key_id
+
+The AWS IAM secret access key. Required.
+
+##### sasl_aws_msk_iam_aws_region
+
+The AWS region. Required.
+
+##### sasl_aws_msk_iam_session_token
+
+The session token. This value can be optional.
+
+###### Examples 
+
+Using a role arn and web identity token to generate tempoarary credentials:
+
+```ruby
+require "aws-sdk-core"
+require "delivery_boy"
+
+role = Aws::AssumeRoleWebIdentityCredentials.new(
+  role_arn: ENV["AWS_ROLE_ARN"],
+  web_identity_token_file: ENV["AWS_WEB_IDENTITY_TOKEN_FILE"]
+)
+
+DeliveryBoy.configure do |c|
+  c.sasl_aws_msk_iam_access_key_id = role.credentials.access_key_id
+  c.sasl_aws_msk_iam_secret_key_id = role.credentials.secret_access_key
+  c.sasl_aws_msk_iam_session_token = role.credentials.session_token
+  c.sasl_aws_msk_iam_aws_region    = ENV["AWS_REGION"]
+  c.ssl_ca_certs_from_system       = true
+end
+```
 
 ### Testing
 
