@@ -5,72 +5,18 @@ RSpec.describe DeliveryBoy do
     DeliveryBoy.testing.clear
   end
 
-  describe ".deliver_async" do
-    it "delivers the message using .deliver_async!" do
-
+  describe ".deliver" do
+    it "delivers the message using .deliver" do
       time1 = Time.now
       time2 = Time.now
-      # DeliveryBoy.deliver("hello", topic: "greetings", create_time: time1)
-      # DeliveryBoy.deliver("world", topic: "greetings", create_time: time2)
+      DeliveryBoy.deliver("hello", topic: "greetings", create_time: time1)
+      DeliveryBoy.deliver("world", topic: "greetings", create_time: time2)
 
-      rdkafka_config_consumer.consumer
+      received_messages = consume_messages(topic: "greetings", max_messages: 2)
 
-      rdkafka_producer = rdkafka_config_producer.producer
-      ["hello", "world"].map do |m|
-        rdkafka_producer.produce(
-          topic: "greetings",
-          key: m,
-          payload: m
-        )
-      end.each(&:wait)
-      rdkafka_producer.close
-
-      # messages = DeliveryBoy.testing.messages_for("greetings")
-
-      incoming_messages = wait_for_messages(topic: "greetings", expected_message_count: 2)
-
-      expect(incoming_messages.map(&:payload)).to eql(["hello", "world"])
+      expect(received_messages.map(&:payload)).to eql(["hello", "world"])
     end
   end
-
-  def rdkafka_config_consumer
-    Rdkafka::Config.new({
-      "bootstrap.servers": "kafka.docker:9092",
-      :"group.id" => "ruby-test",
-      "auto.offset.reset": "beginning"
-    })
-  end
-
-  def rdkafka_config_producer
-    Rdkafka::Config.new({
-      "bootstrap.servers": "kafka.docker:9092",
-    })
-  end
-
-  def wait_for_messages(topic:, expected_message_count:)
-    rdkafka_consumer = rdkafka_config_consumer.consumer
-    rdkafka_consumer.subscribe(topic)
-
-    attempts = 0
-    incoming_messages = []
-
-    while incoming_messages.count < expected_message_count && attempts < 1000
-      $stderr.puts "Waiting for messages..."
-      attempts += 1
-
-      while (message = rdkafka_consumer.poll(1000))
-        $stderr.puts "Received message #{message}"
-        incoming_messages << message
-      end
-
-      sleep 0.1
-    end
-
-    incoming_messages
-  rescue
-    incoming_messages
-  end
-
 
   describe ".configure" do
     it "allows float for .delivery_interval" do
@@ -127,4 +73,37 @@ RSpec.describe DeliveryBoy do
       expect { DeliveryBoy.config }.to raise_error(DeliveryBoy::ConfigError, '"true" is not an integer')
     end
   end
+
+  def consume_messages(topic:, max_messages:, max_attempts: 20)
+    consumer.subscribe(topic)
+
+    messages = []
+
+    attempts = 0
+    while messages.count < max_messages && attempts < max_attempts
+      attempts += 1
+
+      while (message = consumer.poll(1000))
+        messages << message
+      end
+
+      sleep 0.1
+    end
+
+    messages
+  ensure
+    consumer.close
+  end
+
+  def kafka_host
+    ENV.fetch('KAFKA_HOST', 'localhost:9002')
+  end
+
+  let(:consumer) {
+    Rdkafka::Config.new({
+      "bootstrap.servers": kafka_host,
+      "group.id": "ruby-test",
+      "auto.offset.reset": "beginning"
+    }).consumer
+  }
 end

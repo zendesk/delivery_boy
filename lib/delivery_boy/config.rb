@@ -4,6 +4,14 @@ module DeliveryBoy
   class Config < KingKonf::Config
     env_prefix :delivery_boy
 
+    def transactional_timeout_ms
+      transactional_timeout * 1000
+    end
+
+    def isolation_level
+      transactional ? 'read_uncommitted' : 'read_committed'
+    end
+
     # Basic
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
     string :client_id, default: "delivery_boy"
@@ -30,8 +38,8 @@ module DeliveryBoy
     integer :transactional_timeout, default: 60
 
     # Compression
-    integer :compression_threshold, default: 1
-    string :compression_codec, default: nil
+    integer :compression_threshold, default: 1 # deprecated, not an option for RdKafka
+    string :compression_codec, default: "none"
 
     # SSL authentication
     string :ssl_ca_cert, default: nil
