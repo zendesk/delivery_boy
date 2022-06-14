@@ -20,8 +20,9 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "ruby-kafka", "~> 1.0"
+  # spec.add_runtime_dependency "ruby-kafka", "~> 1.0"
   spec.add_runtime_dependency "king_konf", "~> 1.0"
+  spec.add_runtime_dependency "rdkafka"
 
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
