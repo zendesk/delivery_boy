@@ -97,7 +97,7 @@ module DeliveryBoy
         'queue.buffering.max.kbytes': config.max_buffer_bytesize,
         'compression.codec': config.compression_codec,
         'enable.idempotence': config.idempotent,
-        'isolation.level': config.isolation_level,
+        'transactional.id': config.transactional_id,
         'transaction.timeout.ms': config.transactional_timeout_ms,
       }
     end
