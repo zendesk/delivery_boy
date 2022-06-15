@@ -12,6 +12,10 @@ module DeliveryBoy
       transactional ? 'read_uncommitted' : 'read_committed'
     end
 
+    def max_buffer_kbytesize
+      max_buffer_bytesize / 1024
+    end
+
     # Basic
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
     string :client_id, default: "delivery_boy"
