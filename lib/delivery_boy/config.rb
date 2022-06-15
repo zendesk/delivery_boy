@@ -39,6 +39,7 @@ module DeliveryBoy
     integer :retry_backoff, default: 1
     boolean :idempotent, default: false
     boolean :transactional, default: false
+    string :transactional_id, default: nil
     integer :transactional_timeout, default: 60
 
     # Compression
