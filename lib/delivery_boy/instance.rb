@@ -88,6 +88,10 @@ module DeliveryBoy
 
     # Options for both the sync and async producers.
     def producer_options
+      if config.transactional? && config.transactional_id.nil?
+        raise "transactional_id must be set"
+      end
+
       {
         'request.required.acks': config.required_acks,
         'request.timeout.ms': config.ack_timeout,
