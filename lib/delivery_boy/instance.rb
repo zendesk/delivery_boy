@@ -6,9 +6,12 @@ module DeliveryBoy
     def initialize(config, logger)
       @config = config
       @logger = logger
-      @async_producer = nil
+      @handles = []
     end
 
+    attr_reader :handles
+
+    # TODO: add expicit keywords
     def deliver(value, topic:, **options)
       options_clone = options.clone
       if options[:create_time]
@@ -17,6 +20,7 @@ module DeliveryBoy
       end
 
       handle = sync_producer.produce(payload: value, topic: topic, **options_clone)
+      handles.push(handle)
       handle.wait
     rescue
       # Make sure to clear any buffered messages if there's an error.
@@ -26,12 +30,18 @@ module DeliveryBoy
     end
 
     def deliver_async!(value, topic:, **options)
-      async_producer.produce(value, topic: topic, **options)
+      options_clone = options.clone
+      if options[:create_time]
+        options_clone[:timestamp] = Time.at(options[:create_time])
+        options_clone.delete(:create_time)
+      end
+
+      handle = sync_producer.produce(payload: value, topic: topic, **options_clone)
+      handles.push(handle)
     end
 
     def shutdown
       sync_producer.close if sync_producer?
-      async_producer.shutdown if async_producer?
     end
 
     def produce(value, topic:, **options)
@@ -64,24 +74,12 @@ module DeliveryBoy
       Thread.current.key?(:delivery_boy_sync_producer)
     end
 
-    def async_producer
-      # The async producer doesn't have to be per-thread, since all deliveries are
-      # performed by a single background thread.
-      @async_producer ||= kafka.async_producer(
-        max_queue_size: config.max_queue_size,
-        delivery_threshold: config.delivery_threshold,
-        delivery_interval: config.delivery_interval,
-        **producer_options,
-      )
-    end
-
-    def async_producer?
-      !@async_producer.nil?
-    end
-
     def kafka
       @kafka ||= Rdkafka::Config.new({
-        "bootstrap.servers": ENV.fetch('KAFKA_HOST')
+        "bootstrap.servers": ENV.fetch('KAFKA_HOST'),
+        "queue.buffering.max.messages": config.max_queue_size,
+        "queue.buffering.backpressure.threshold": config.delivery_threshold,
+        "queue.buffering.max.ms": config.delivery_interval_ms,
       }.merge(producer_options))
     end
 
