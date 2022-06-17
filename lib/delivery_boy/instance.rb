@@ -78,7 +78,7 @@ module DeliveryBoy
       # The async producer doesn't have to be per-thread, since all deliveries are
       # performed by a single background thread.
       @async_producer ||= Rdkafka::Config.new({
-        "bootstrap.servers": ENV.fetch('KAFKA_HOST'),
+        "bootstrap.servers": config.brokers.join(","),
         "queue.buffering.max.messages": config.max_queue_size,
         "queue.buffering.backpressure.threshold": config.delivery_threshold,
         "queue.buffering.max.ms": config.delivery_interval_ms,
@@ -91,7 +91,7 @@ module DeliveryBoy
 
     def kafka
       @kafka ||= Rdkafka::Config.new({
-        "bootstrap.servers": ENV.fetch('KAFKA_HOST')
+        "bootstrap.servers": config.brokers.join(",")
       }.merge(producer_options))
     end
 
