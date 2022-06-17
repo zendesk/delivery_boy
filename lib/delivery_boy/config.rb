@@ -16,6 +16,10 @@ module DeliveryBoy
       max_buffer_bytesize / 1024
     end
 
+    def delivery_interval_ms
+      delivery_interval * 1000
+    end
+
     # Basic
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
     string :client_id, default: "delivery_boy"
