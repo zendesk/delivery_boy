@@ -2,6 +2,8 @@ require "bundler/setup"
 require "delivery_boy"
 require "testcontainers/kafka"
 
+ENV["DELIVERY_BOY_DELIVERY_INTERVAL"] = "0"
+
 RSpec.configure do |config|
   config.add_setting :container, default: nil
 
