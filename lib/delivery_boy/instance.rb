@@ -35,14 +35,14 @@ module DeliveryBoy
         options_clone.delete(:create_time)
       end
 
-      handle = sync_producer.produce(payload: value, topic: topic, **options_clone)
+      handle = async_producer.produce(payload: value, topic: topic, **options_clone)
       handles.push(handle)
     end
 
     def shutdown
       sync_producer.close if sync_producer?
       async_producer.shutdown if async_producer?
-
+      async_producer.close if async_producer?
       Thread.current[:delivery_boy_sync_producer] = nil
     end
 
@@ -76,12 +76,24 @@ module DeliveryBoy
       Thread.current.key?(:delivery_boy_sync_producer)
     end
 
-    def kafka
-      @kafka ||= Rdkafka::Config.new({
+    def async_producer
+      # The async producer doesn't have to be per-thread, since all deliveries are
+      # performed by a single background thread.
+      @async_producer ||= Rdkafka::Config.new({
         "bootstrap.servers": ENV.fetch('KAFKA_HOST'),
         "queue.buffering.max.messages": config.max_queue_size,
         "queue.buffering.backpressure.threshold": config.delivery_threshold,
         "queue.buffering.max.ms": config.delivery_interval_ms,
+      }.merge(producer_options)).producer
+    end
+
+    def async_producer?
+      !@async_producer.nil?
+    end
+
+    def kafka
+      @kafka ||= Rdkafka::Config.new({
+        "bootstrap.servers": ENV.fetch('KAFKA_HOST')
       }.merge(producer_options))
     end
 
