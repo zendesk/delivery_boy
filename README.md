@@ -287,7 +287,7 @@ The session token. This value can be optional.
 
 ###### Examples 
 
-Using a role arn and web identity token to generate tempoarary credentials:
+Using a role arn and web identity token to generate temporary credentials:
 
 ```ruby
 require "aws-sdk-core"
