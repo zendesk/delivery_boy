@@ -3,6 +3,7 @@ require "delivery_boy"
 RSpec.describe DeliveryBoy do
   after(:each) do
     DeliveryBoy.testing.clear
+    DeliveryBoy.clear_config!
   end
 
   describe ".deliver_async" do

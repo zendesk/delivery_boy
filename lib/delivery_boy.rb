@@ -122,6 +122,10 @@ module DeliveryBoy
       raise ConfigError, e.message
     end
 
+    def clear_config!
+      @config = nil
+    end
+
     # Configure DeliveryBoy in a block.
     #
     #     DeliveryBoy.configure do |config|
