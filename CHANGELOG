@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Add config support for AWS MSK IAM auth (#66)
+
 ## v1.1.0
 
 * Support for `ssl_client_cert_key_password` in the configuration (#52)
