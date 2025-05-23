@@ -70,7 +70,7 @@ A third method is to produce messages first (without delivering the messages to 
      event = {
        name: "comment_created",
        data: {
-         comment_id: @comment.id
+         comment_id: @comment.id,
          user_id: current_user.id
        }
      }
@@ -267,6 +267,7 @@ DeliveryBoy.configure do |config|
   config.ssl_ca_certs_from_system = true
 end
 ```
+
 #### AWS MSK IAM Authentication and Authorization
 
 ##### sasl_aws_msk_iam_access_key_id
@@ -351,6 +352,20 @@ Since DeliveryBoy is just an opinionated API on top of ruby-kafka, you can use a
 ## Contributing
 
 Bug reports and pull requests are welcome on [GitHub](https://github.com/zendesk/delivery_boy). Feel free to [join our Slack team](https://ruby-kafka-slack.herokuapp.com/) and ask how best to contribute!
+
+### Releasing a new version
+A new version is published to RubyGems.org every time a change to `version.rb` is pushed to the `main` branch.
+In short, follow these steps:
+1. Update `version.rb`,
+2. merge this change into `main`, and
+3. look at [the action](https://github.com/zendesk/delivery_boy/actions/workflows/publish.yml) for output.
+
+To create a pre-release from a non-main branch:
+1. change the version in `version.rb` to something like `1.2.0.pre.1` or `2.0.0.beta.2`,
+2. push this change to your branch,
+3. go to [Actions → “Publish to RubyGems.org” on GitHub](https://github.com/zendesk/delivery_boy/actions/workflows/publish.yml),
+4. click the “Run workflow” button,
+5. pick your branch from a dropdown.
 
 ## Support and Discussion
 
