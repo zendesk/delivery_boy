@@ -98,6 +98,7 @@ module DeliveryBoy
     # @return [nil]
     def shutdown
       instance.shutdown
+      @instance = nil
     end
 
     # The logger used by DeliveryBoy.
