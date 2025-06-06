@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* Remove the `Kafka::Producer` instance from thread local variable when calling
+  `DeliveryBoy.shutdown` / `DeliveryBoy::Instance#shutdown`. (#83)
+
 ## v1.3.0
 
 * Remove the `DeliveryBoy::Instance` instance when calling
