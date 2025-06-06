@@ -26,6 +26,8 @@ module DeliveryBoy
     def shutdown
       sync_producer.shutdown if sync_producer?
       async_producer.shutdown if async_producer?
+
+      Thread.current[:delivery_boy_sync_producer] = nil
     end
 
     def produce(value, topic:, **options)
