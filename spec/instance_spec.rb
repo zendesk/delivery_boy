@@ -1,7 +1,7 @@
 require "delivery_boy"
 
 RSpec.describe DeliveryBoy::Instance do
-  let(:logger) { Logger.new($stderr) }
+  let(:logger) { Logger.new($stdout, level: ENV["DEBUG"] ? Logger::DEBUG : Logger::FATAL) }
   let(:config) { DeliveryBoy::Config.new }
   let(:instance) { DeliveryBoy::Instance.new(config, logger) }
 
