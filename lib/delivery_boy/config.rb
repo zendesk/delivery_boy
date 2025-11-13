@@ -4,6 +4,14 @@ module DeliveryBoy
   class Config < KingKonf::Config
     env_prefix :delivery_boy
 
+    def connection_timeout_ms
+      connect_timeout * 1000
+    end
+
+    def socket_timeout_ms
+      socket_timeout * 1000
+    end
+
     def transactional_timeout_ms
       transactional_timeout * 1000
     end
