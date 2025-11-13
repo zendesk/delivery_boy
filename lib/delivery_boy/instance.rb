@@ -1,5 +1,4 @@
 module DeliveryBoy
-
   # This class implements the actual logic of DeliveryBoy. The DeliveryBoy module
   # has a module-level singleton instance.
   class Instance
@@ -67,7 +66,7 @@ module DeliveryBoy
         max_queue_size: config.max_queue_size,
         delivery_threshold: config.delivery_threshold,
         delivery_interval: config.delivery_interval,
-        **producer_options,
+        **producer_options
       )
     end
 
@@ -115,11 +114,11 @@ module DeliveryBoy
         retry_backoff: config.retry_backoff,
         max_buffer_size: config.max_buffer_size,
         max_buffer_bytesize: config.max_buffer_bytesize,
-        compression_codec: (config.compression_codec.to_sym if config.compression_codec),
+        compression_codec: config.compression_codec,
         compression_threshold: config.compression_threshold,
         idempotent: config.idempotent,
         transactional: config.transactional,
-        transactional_timeout: config.transactional_timeout,
+        transactional_timeout: config.transactional_timeout
       }
     end
   end

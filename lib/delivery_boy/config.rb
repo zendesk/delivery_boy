@@ -31,7 +31,7 @@ module DeliveryBoy
 
     # Compression
     integer :compression_threshold, default: 1
-    string :compression_codec, default: nil
+    symbol :compression_codec, default: nil
 
     # SSL authentication
     string :ssl_ca_cert, default: nil
@@ -45,7 +45,7 @@ module DeliveryBoy
     # SASL authentication
     string :sasl_gssapi_principal
     string :sasl_gssapi_keytab
-    string :sasl_plain_authzid, default: ''
+    string :sasl_plain_authzid, default: ""
     string :sasl_plain_username
     string :sasl_plain_password
     string :sasl_scram_username
