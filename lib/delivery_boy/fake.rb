@@ -1,5 +1,4 @@
 module DeliveryBoy
-
   # A fake implementation that is useful for testing.
   class Fake
     FakeMessage = Struct.new(:value, :topic, :key, :headers, :offset, :partition, :partition_key, :create_time) do
@@ -9,8 +8,8 @@ module DeliveryBoy
     end
 
     def initialize
-      @messages = Hash.new {|h, k| h[k] = [] }
-      @buffer = Hash.new {|h, k| h[k] = [] }
+      @messages = Hash.new { |h, k| h[k] = [] }
+      @buffer = Hash.new { |h, k| h[k] = [] }
       @delivery_lock = Mutex.new
     end
 
@@ -25,7 +24,7 @@ module DeliveryBoy
       nil
     end
 
-    alias deliver_async! deliver
+    alias_method :deliver_async!, :deliver
 
     def produce(value, topic:, key: nil, headers: {}, partition: nil, partition_key: nil, create_time: Time.now)
       @delivery_lock.synchronize do

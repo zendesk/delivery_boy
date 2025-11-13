@@ -1,20 +1,19 @@
-# coding: utf-8
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "delivery_boy/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "delivery_boy"
-  spec.version       = DeliveryBoy::VERSION
-  spec.authors       = ["Daniel Schierbeck"]
-  spec.email         = ["daniel.schierbeck@gmail.com"]
+  spec.name = "delivery_boy"
+  spec.version = DeliveryBoy::VERSION
+  spec.authors = ["Daniel Schierbeck"]
+  spec.email = ["daniel.schierbeck@gmail.com"]
 
-  spec.summary       = "A simple way to produce messages to Kafka from Ruby applications"
-  spec.description   = "A simple way to produce messages to Kafka from Ruby applications"
-  spec.homepage      = "https://github.com/zendesk/delivery_boy"
-  spec.license       = "Apache License Version 2.0"
+  spec.summary = "A simple way to produce messages to Kafka from Ruby applications"
+  spec.description = "A simple way to produce messages to Kafka from Ruby applications"
+  spec.homepage = "https://github.com/zendesk/delivery_boy"
+  spec.license = "Apache License Version 2.0"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+  spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
 

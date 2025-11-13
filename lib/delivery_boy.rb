@@ -9,7 +9,6 @@ require "delivery_boy/railtie" if defined?(Rails::Railtie)
 
 module DeliveryBoy
   class << self
-
     # Write a message to a specified Kafka topic synchronously.
     #
     # Keep in mind that the client will block until the message has been
