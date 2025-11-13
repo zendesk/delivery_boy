@@ -45,3 +45,15 @@ jobs:
       run: bundle exec rake
       env:
         DELIVERY_BOY_BROKERS: localhost:9092
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+    - run: bundle exec rake standard
