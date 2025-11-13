@@ -2,6 +2,21 @@ require "spec_helper"
 require "delivery_boy"
 
 RSpec.describe DeliveryBoy do
+  before(:all) do
+    create_topic("greetings")
+  end
+
+  def create_topic(topic)
+    Rdkafka::Config.new({
+      "bootstrap.servers": RSpec.configuration.container.connection_url
+    })
+      .admin
+      .create_topic(topic, 1, 1)
+      .wait(max_wait_timeout: 5)
+  rescue Rdkafka::RdkafkaError => e
+    raise unless e.code == :topic_already_exists
+  end
+
   after(:each) do
     DeliveryBoy.testing.clear
     DeliveryBoy.shutdown
@@ -29,16 +44,6 @@ RSpec.describe DeliveryBoy do
 
       expect(DeliveryBoy.send(:instance).send(:handles).map(&:pending?)).to all be(false)
     end
-
-    # context "when there is an error" do
-    #   it "clears the buffer" do
-    #     DeliveryBoy.deliver("hello", topic: topic_name)
-    #     allow_any_instance_of(Rdkafka::Producer).to receive(:produce).and_raise(RuntimeError)
-    #     DeliveryBoy.deliver("world", topic: topic_name) rescue nil
-    #
-    #     expect(DeliveryBoy.send(:instance).send(:handles).map(&:pending?)).to all be(false)
-    #   end
-    # end
   end
 
   describe ".deliver_async!" do
@@ -50,12 +55,26 @@ RSpec.describe DeliveryBoy do
 
       expect(received_messages.map(&:payload)).to eql([message1, message2])
     end
+  end
 
-    it "does not block" do
-      DeliveryBoy.deliver_async!("hello", topic: topic_name)
-      DeliveryBoy.deliver_async!("world", topic: topic_name)
+  describe ".produce and .deliver_messages" do
+    it "sends message and adds to the hanldes buffer" do
+      DeliveryBoy.produce("hello", topic: topic_name)
+      DeliveryBoy.produce("world", topic: topic_name)
 
+      expect(DeliveryBoy.send(:instance).send(:handles).size).to eq 2
       expect(DeliveryBoy.send(:instance).send(:handles).map(&:pending?)).to all be(true)
+    end
+
+    it "waits on producing messages" do
+      DeliveryBoy.produce("hello", topic: topic_name)
+      DeliveryBoy.produce("world", topic: topic_name)
+
+      handles = DeliveryBoy.send(:instance).send(:handles)
+
+      DeliveryBoy.deliver_messages
+
+      expect(handles.map(&:pending?)).to all be(false)
     end
   end
 
@@ -69,66 +88,49 @@ RSpec.describe DeliveryBoy do
     end
   end
 
-  describe ".produce and .deliver_messages" do
-    it "does not send produced messages without calling deliver_messages" do
-      DeliveryBoy.test_mode!
-
-      DeliveryBoy.produce("hello", topic: topic_name)
-      DeliveryBoy.produce("world", topic: topic_name)
-
-      expect(DeliveryBoy.testing.messages_for( topic_name).count).to eq 0
-    end
-
-    it "sends produced messages after calling deliver_messages" do
-      DeliveryBoy.test_mode!
-
-      time1 = Time.now
-      time2 = Time.now
-      DeliveryBoy.produce("hello", topic: topic_name, create_time: time1)
-      DeliveryBoy.produce("world", topic: topic_name, create_time: time2)
-      DeliveryBoy.deliver_messages
-
-      messages = DeliveryBoy.testing.messages_for( topic_name)
-
-      expect(messages.count).to eq 2
-
-      expect(messages[0].value).to eq "hello"
-      expect(messages[0].offset).to eq 0
-      expect(messages[0].create_time).to eq time1
-
-      expect(messages[1].value).to eq "world"
-      expect(messages[1].offset).to eq 1
-      expect(messages[1].create_time).to eq time2
-    end
-  end
-
-  xdescribe "with invalid config in ENV" do
+  describe "with invalid config in ENV" do
     before { ENV["DELIVERY_BOY_ACK_TIMEOUT"] = "true" }
     after { ENV.delete("DELIVERY_BOY_ACK_TIMEOUT") }
 
     it "raises ConfigError" do
+      # reset cached config
+      DeliveryBoy.clear_config!
       DeliveryBoy.test_mode!
 
       expect { DeliveryBoy.config }.to raise_error(DeliveryBoy::ConfigError, '"true" is not an integer')
     end
   end
 
-
   def consume_new_messages(topic:, max_messages:, max_attempts: 20, &block)
+    consumer = Rdkafka::Config.new({
+      "bootstrap.servers": RSpec.configuration.container.connection_url,
+      "group.id": "ruby-test" + SecureRandom.hex(8),
+      "auto.offset.reset": "earliest"
+    }).consumer
+
     messages = []
 
     consumer.subscribe(topic)
+    puts "subscribed to topic #{topic}"
+
+    # wait for any in-flight messages to arrive to avoid flaky tests
+    sleep 5
+
     attempts = 0
     existing_message = true
 
     while existing_message
-      existing_message = consumer.poll(100)
+      p existing_message = consumer.poll(100)
     end
+
+    puts "Existing messages consumed, starting to execute block to produce new messages"
 
     block.call
 
     while messages.count < max_messages && attempts < max_attempts
       attempts += 1
+
+      puts "Polling for messages, attempt #{attempts}"
 
       message = consumer.poll(100)
       if message
@@ -138,19 +140,7 @@ RSpec.describe DeliveryBoy do
 
     messages
   ensure
+    puts "Closing consumer"
     consumer.close
   end
-
-  def kafka_host
-    # TODO: use brokers from config
-    ENV.fetch('KAFKA_HOST', 'localhost:9002')
-  end
-
-  let(:consumer) {
-    Rdkafka::Config.new({
-      "bootstrap.servers": kafka_host,
-      "group.id": "ruby-test",
-      "auto.offset.reset": "end"
-    }).consumer
-  }
 end

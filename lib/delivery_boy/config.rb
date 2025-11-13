@@ -4,12 +4,20 @@ module DeliveryBoy
   class Config < KingKonf::Config
     env_prefix :delivery_boy
 
+    def connection_timeout_ms
+      connect_timeout * 1000
+    end
+
+    def socket_timeout_ms
+      socket_timeout * 1000
+    end
+
     def transactional_timeout_ms
       transactional_timeout * 1000
     end
 
     def isolation_level
-      transactional ? 'read_uncommitted' : 'read_committed'
+      transactional ? "read_uncommitted" : "read_committed"
     end
 
     def max_buffer_kbytesize
@@ -18,6 +26,9 @@ module DeliveryBoy
 
     def delivery_interval_ms
       delivery_interval * 1000
+    end
+
+    def sasl_username
     end
 
     # Basic
@@ -59,6 +70,8 @@ module DeliveryBoy
     boolean :ssl_ca_certs_from_system, default: false
     boolean :ssl_verify_hostname, default: true
 
+    # Supported: GSSAPI, PLAIN, SCRAM-SHA-256, SCRAM-SHA-512, OAUTHBEARER
+    string :sasl_mechanism, default: "GSSAPI"
     # SASL authentication
     string :sasl_gssapi_principal
     string :sasl_gssapi_keytab
