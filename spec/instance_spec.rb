@@ -2,7 +2,13 @@ require "delivery_boy"
 
 RSpec.describe DeliveryBoy::Instance do
   let(:logger) { Logger.new($stdout, level: ENV["DEBUG"] ? Logger::DEBUG : Logger::FATAL) }
-  let(:config) { DeliveryBoy::Config.new }
+  let(:config) do
+    DeliveryBoy::Config.new.tap do |conf|
+      conf.set(:brokers, [
+        RSpec.configuration.container.connection_url
+      ])
+    end
+  end
   let(:instance) { DeliveryBoy::Instance.new(config, logger) }
 
   describe "#buffer_size" do

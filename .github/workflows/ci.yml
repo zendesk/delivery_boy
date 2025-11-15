@@ -25,11 +25,6 @@ jobs:
         ruby-version: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4']
 
     steps:
-    - name: Run Confluent Platform (Confluent Server)
-      uses: zendesk/cp-all-in-one-action@v0.2.1
-      with:
-        service: broker
-
     - uses: actions/checkout@v4
 
     - name: Set up Ruby
@@ -38,13 +33,8 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
-    - name: Wait for broker to boot
-      run: 'while ! nc -z localhost 9092; do echo -n "."; sleep 0.1; done'
-
     - name: Run tests
       run: bundle exec rake
-      env:
-        DELIVERY_BOY_BROKERS: localhost:9092
 
   lint:
     runs-on: ubuntu-latest
