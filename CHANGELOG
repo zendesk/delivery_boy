@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Drop support for Ruby 3.1 and below. Minimum supported Ruby version is now 3.2.
 * `compression_codec` in the `DeliveryBoy::Config` is now coerces its value into
   a symbol if the value is present.
 
