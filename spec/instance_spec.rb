@@ -21,8 +21,25 @@ RSpec.describe DeliveryBoy::Instance do
   end
 
   describe "#deliver" do
+    after do
+      instance.shutdown
+      Thread.current[:delivery_boy_sync_producer] = nil
+    end
+
     it "delivers a message to Kafka" do
       instance.deliver("hello", topic: "greetings")
+    end
+
+    context "when transactional is set to true and transactional_id is missing" do
+      before :each do
+        config.transactional = true
+      end
+
+      it "raises an exception" do
+        expect {
+          instance.deliver("hello", topic: "greetings")
+        }.to raise_error("transactional_id must be set")
+      end
     end
   end
 
