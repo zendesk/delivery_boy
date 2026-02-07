@@ -4,6 +4,33 @@ module DeliveryBoy
   class Config < KingKonf::Config
     env_prefix :delivery_boy
 
+    def connection_timeout_ms
+      connect_timeout * 1000
+    end
+
+    def socket_timeout_ms
+      socket_timeout * 1000
+    end
+
+    def transactional_timeout_ms
+      transactional_timeout * 1000
+    end
+
+    def isolation_level
+      transactional ? "read_uncommitted" : "read_committed"
+    end
+
+    def max_buffer_kbytesize
+      max_buffer_bytesize / 1024
+    end
+
+    def delivery_interval_ms
+      delivery_interval * 1000
+    end
+
+    def sasl_username
+    end
+
     # Basic
     list :brokers, items: :string, sep: ",", default: ["localhost:9092"]
     string :client_id, default: "delivery_boy"
@@ -27,11 +54,12 @@ module DeliveryBoy
     integer :retry_backoff, default: 1
     boolean :idempotent, default: false
     boolean :transactional, default: false
+    string :transactional_id, default: nil
     integer :transactional_timeout, default: 60
 
     # Compression
-    integer :compression_threshold, default: 1
-    symbol :compression_codec, default: nil
+    integer :compression_threshold, default: 1 # deprecated, not an option for RdKafka
+    string :compression_codec, default: "none"
 
     # SSL authentication
     string :ssl_ca_cert, default: nil
@@ -42,6 +70,8 @@ module DeliveryBoy
     boolean :ssl_ca_certs_from_system, default: false
     boolean :ssl_verify_hostname, default: true
 
+    # Supported: GSSAPI, PLAIN, SCRAM-SHA-256, SCRAM-SHA-512, OAUTHBEARER
+    string :sasl_mechanism, default: "GSSAPI"
     # SASL authentication
     string :sasl_gssapi_principal
     string :sasl_gssapi_keytab
