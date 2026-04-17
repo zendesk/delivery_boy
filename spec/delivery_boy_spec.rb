@@ -7,14 +7,14 @@ RSpec.describe DeliveryBoy do
   end
 
   def create_topic(topic)
-    Rdkafka::Config.new({
+    admin = Rdkafka::Config.new({
       "bootstrap.servers": RSpec.configuration.container.connection_url
-    })
-      .admin
-      .create_topic(topic, 1, 1)
-      .wait(max_wait_timeout: 5)
+    }).admin
+    admin.create_topic(topic, 1, 1).wait(max_wait_timeout: 5)
   rescue Rdkafka::RdkafkaError => e
     raise unless e.code == :topic_already_exists
+  ensure
+    admin&.close
   end
 
   after(:each) do

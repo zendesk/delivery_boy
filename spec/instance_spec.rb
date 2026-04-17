@@ -12,6 +12,12 @@ RSpec.describe DeliveryBoy::Instance do
   end
   let(:instance) { DeliveryBoy::Instance.new(config, logger) }
 
+  after do
+    instance.shutdown if instance.instance_variable_get(:@async_producer) || Thread.current[:delivery_boy_sync_producer]
+    Thread.current[:delivery_boy_sync_producer] = nil
+    Thread.current[:delivery_boy_handles] = nil
+  end
+
   # Upgrade note: There is no buffer anymore
   # describe "#buffer_size" do
   #   it "returns the number of messages in the buffer" do
@@ -23,11 +29,6 @@ RSpec.describe DeliveryBoy::Instance do
   # end
 
   describe "#deliver" do
-    after do
-      instance.shutdown
-      Thread.current[:delivery_boy_sync_producer] = nil
-    end
-
     it "delivers a message to Kafka" do
       instance.deliver("hello", topic: "greetings")
     end
