@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 module DeliveryBoy
   # This class implements the actual logic of DeliveryBoy. The DeliveryBoy module
   # has a module-level singleton instance.
   class Instance
-    def initialize(config, logger)
+    def initialize(config, logger, instrumenter: NullInstrumenter.new)
       @config = config
       @logger = logger
+      @instrumenter = instrumenter
     end
 
     def deliver(value, topic:, **options)
@@ -14,9 +17,19 @@ module DeliveryBoy
         options_clone.delete(:create_time)
       end
 
-      sync_producer
-        .produce(payload: value, topic: topic, **options_clone)
-        .wait
+      message_size = value.to_s.bytesize
+
+      instrumentation_payload = {
+        client_id: config.client_id,
+        topic: topic,
+        message_size: message_size
+      }
+
+      @instrumenter.instrument("deliver", instrumentation_payload) do
+        sync_producer
+          .produce(payload: value, topic: topic, **options_clone)
+          .wait
+      end
     end
 
     def deliver_async!(value, topic:, **options)
@@ -26,8 +39,19 @@ module DeliveryBoy
         options_clone.delete(:create_time)
       end
 
-      async_producer
-        .produce(payload: value, topic: topic, **options_clone)
+      message_size = value.to_s.bytesize
+
+      instrumentation_payload = {
+        client_id: config.client_id,
+        topic: topic,
+        message_size: message_size,
+        queue_size: async_producer_queue_size
+      }
+
+      @instrumenter.instrument("deliver_async", instrumentation_payload) do
+        async_producer
+          .produce(payload: value, topic: topic, **options_clone)
+      end
     end
 
     def shutdown
@@ -42,13 +66,33 @@ module DeliveryBoy
         options_clone.delete(:create_time)
       end
 
-      handle = sync_producer.produce(payload: value, topic: topic, **options_clone)
-      handles.push(handle)
+      message_size = value.to_s.bytesize
+
+      instrumentation_payload = {
+        client_id: config.client_id,
+        topic: topic,
+        message_size: message_size,
+        buffer_size: handles.size
+      }
+
+      @instrumenter.instrument("produce_message", instrumentation_payload) do
+        handle = sync_producer.produce(payload: value, topic: topic, **options_clone)
+        handles.push(handle)
+      end
     end
 
     def deliver_messages
-      handles.each(&:wait)
-      handles.clear
+      message_count = handles.size
+
+      instrumentation_payload = {
+        client_id: config.client_id,
+        delivered_message_count: message_count
+      }
+
+      @instrumenter.instrument("deliver_messages", instrumentation_payload) do
+        handles.each(&:wait)
+        handles.clear
+      end
     end
 
     def clear_buffer
@@ -76,15 +120,47 @@ module DeliveryBoy
     def async_producer
       # The async producer doesn't have to be per-thread, since all deliveries are
       # performed by a single background thread.
-      @async_producer ||= Rdkafka::Config.new({
-        "bootstrap.servers": config.brokers.join(","),
-        "queue.buffering.backpressure.threshold": config.delivery_threshold,
-        "queue.buffering.max.ms": config.delivery_interval_ms
-      }.merge(producer_options)).producer
+      @async_producer ||= begin
+        producer = Rdkafka::Config.new({
+          "bootstrap.servers": config.brokers.join(","),
+          "queue.buffering.backpressure.threshold": config.delivery_threshold,
+          "queue.buffering.max.ms": config.delivery_interval_ms
+        }.merge(producer_options)).producer
+
+        producer.delivery_callback = delivery_callback
+        producer
+      end
     end
 
     def async_producer?
       !@async_producer.nil?
+    end
+
+    def async_producer_queue_size
+      return 0 unless async_producer?
+      # rdkafka doesn't expose queue size directly, return 0 as approximation
+      0
+    end
+
+    def delivery_callback
+      instrumenter = @instrumenter
+      client_id = config.client_id
+
+      proc do |delivery_report|
+        if delivery_report.error
+          instrumenter.instrument("delivery_error", {
+            client_id: client_id,
+            error: delivery_report.error
+          })
+        else
+          instrumenter.instrument("ack_message", {
+            client_id: client_id,
+            topic: delivery_report.topic_name,
+            partition: delivery_report.partition,
+            offset: delivery_report.offset
+          })
+        end
+      end
     end
 
     def kafka

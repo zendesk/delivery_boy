@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DeliveryBoy
   class Railtie < Rails::Railtie
     initializer "delivery_boy.load_config" do
@@ -12,12 +14,15 @@ module DeliveryBoy
       end
 
       if config.datadog_enabled
-        require "kafka/datadog"
+        require "delivery_boy/datadog"
 
-        Kafka::Datadog.host = config.datadog_host if config.datadog_host.present?
-        Kafka::Datadog.port = config.datadog_port if config.datadog_port.present?
-        Kafka::Datadog.namespace = config.datadog_namespace if config.datadog_namespace.present?
-        Kafka::Datadog.tags = config.datadog_tags if config.datadog_tags.present?
+        DeliveryBoy::Datadog.host = config.datadog_host if config.datadog_host.present?
+        DeliveryBoy::Datadog.port = config.datadog_port if config.datadog_port.present?
+        DeliveryBoy::Datadog.namespace = config.datadog_namespace if config.datadog_namespace.present?
+        DeliveryBoy::Datadog.tags = config.datadog_tags if config.datadog_tags.present?
+
+        # Enable instrumentation
+        DeliveryBoy.instrumenter = DeliveryBoy::Instrumenter.new(default_payload: {})
       end
     end
   end
