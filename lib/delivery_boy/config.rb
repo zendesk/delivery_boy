@@ -61,10 +61,10 @@ module DeliveryBoy
     string :client_id, default: "delivery_boy"
     string :log_level, default: nil
 
-    # Buffering
+    # Buffering (defaults match librdkafka defaults to avoid queue overflow at high throughput)
     integer :max_buffer_bytesize, default: 10_000_000
-    integer :max_buffer_size, default: 1000
-    integer :max_queue_size, default: 1000
+    integer :max_buffer_size, default: 100_000
+    integer :max_queue_size, default: 100_000
 
     # Network timeouts
     integer :connect_timeout, default: 10
