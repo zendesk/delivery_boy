@@ -90,7 +90,7 @@ module DeliveryBoy
       }
 
       @instrumenter.instrument("deliver_messages", instrumentation_payload) do
-        handles.each(&:wait)
+        sync_producer.flush
         handles.clear
       end
     end
