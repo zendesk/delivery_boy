@@ -10,7 +10,12 @@ RSpec.describe DeliveryBoy do
     admin = Rdkafka::Config.new({
       "bootstrap.servers": RSpec.configuration.container.connection_url
     }).admin
-    admin.create_topic(topic, 1, 1).wait(max_wait_timeout: 5)
+
+    if Gem::Version.new(Rdkafka::VERSION) >= Gem::Version.new("0.25")
+      admin.create_topic(topic, 1, 1).wait(max_wait_timeout_ms: 5000)
+    else
+      admin.create_topic(topic, 1, 1).wait(max_wait_timeout: 5)
+    end
   rescue Rdkafka::RdkafkaError => e
     raise unless e.code == :topic_already_exists
   ensure
