@@ -346,10 +346,9 @@ module DeliveryBoy
         "ssl.ca.location": config.ssl_ca_cert_file_path,
         "ssl.certificate.pem": config.ssl_client_cert,
         "ssl.key.pem": config.ssl_client_cert_key,
-        "ssl.key.password": config.ssl_client_cert_key_password
-        # ssl_ca_certs_from_system: config.ssl_ca_certs_from_system, # TODO: there is no corresponding librdkafka option. check what this does
-        # ssl_verify_hostname: config.ssl_verify_hostname, # check
-      }.merge(sasl_options)
+        "ssl.key.password": config.ssl_client_cert_key_password,
+        "enable.ssl.certificate.verification": config.ssl_verify_hostname
+      }.merge(sasl_options).compact
     end
 
     def handles

@@ -31,7 +31,6 @@
 The following config options are silently ignored (no error, but no effect):
 * `max_queue_size` - rdkafka manages its own internal queue
 * `ssl_ca_certs_from_system` - no librdkafka equivalent
-* `ssl_verify_hostname` - not mapped to librdkafka
 * `sasl_scram_mechanism` - use `sasl_mechanism` instead
 * `log_level` - rdkafka has its own logging configuration
 

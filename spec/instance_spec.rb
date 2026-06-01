@@ -394,5 +394,29 @@ RSpec.describe DeliveryBoy::Instance do
         expect(instance.send(:security_protocol)).to eq("SASL_PLAINTEXT")
       end
     end
+
+    describe "#producer_options" do
+      it "maps ssl_verify_hostname=true to enable.ssl.certificate.verification=true" do
+        config.ssl_verify_hostname = true
+        options = instance.send(:producer_options)
+        expect(options[:"enable.ssl.certificate.verification"]).to eq(true)
+      end
+
+      it "maps ssl_verify_hostname=false to enable.ssl.certificate.verification=false" do
+        config.ssl_verify_hostname = false
+        options = instance.send(:producer_options)
+        expect(options[:"enable.ssl.certificate.verification"]).to eq(false)
+      end
+
+      it "omits nil SSL options instead of passing empty strings to librdkafka" do
+        options = instance.send(:producer_options)
+        expect(options).not_to have_key(:"ssl.ca.pem")
+        expect(options).not_to have_key(:"ssl.ca.location")
+        expect(options).not_to have_key(:"ssl.certificate.pem")
+        expect(options).not_to have_key(:"ssl.key.pem")
+        expect(options).not_to have_key(:"ssl.key.password")
+        expect(options).not_to have_key(:"transactional.id")
+      end
+    end
   end
 end
