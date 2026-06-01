@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 require "logger"
-require "kafka"
 require "delivery_boy/version"
+require "delivery_boy/instrumenter"
 require "delivery_boy/instance"
 require "delivery_boy/fake"
 require "delivery_boy/config"
 require "delivery_boy/config_error"
 require "delivery_boy/railtie" if defined?(Rails::Railtie)
+require "rdkafka"
 
 module DeliveryBoy
   class << self
@@ -22,20 +25,19 @@ module DeliveryBoy
     # @param partition_key [String, nil] a key used to deterministically assign
     #   a partition to the message.
     # @return [nil]
-    # @raise [Kafka::BufferOverflow] if the producer's buffer is full.
-    # @raise [Kafka::DeliveryFailed] if delivery failed for some reason.
+    # @raise [Rdkafka::RdkafkaError] if delivery failed for some reason.
     def deliver(value, topic:, **options)
       instance.deliver(value, topic: topic, **options)
     end
 
-    # Like {.deliver_async!}, but handles +Kafka::BufferOverflow+ errors
+    # Like {.deliver_async!}, but handles +Rdkafka::RdkafkaError+ errors
     # by logging them and just going on with normal business.
     #
     # @return [nil]
     def deliver_async(value, topic:, **options)
       deliver_async!(value, topic: topic, **options)
-    rescue Kafka::BufferOverflow
-      logger.error "Message for `#{topic}` dropped due to buffer overflow"
+    rescue Rdkafka::RdkafkaError => e
+      logger.error "Message for `#{topic}` dropped due to error: #{e.message}"
     end
 
     # Like {.deliver}, but returns immediately.
@@ -47,14 +49,14 @@ module DeliveryBoy
       instance.deliver_async!(value, topic: topic, **options)
     end
 
-    # Like {.produce!}, but handles +Kafka::BufferOverflow+ errors
+    # Like {.produce!}, but handles +Rdkafka::RdkafkaError+ errors
     # by logging them and just going on with normal business.
     #
     # @return [nil]
     def produce(value, topic:, **options)
       produce!(value, topic: topic, **options)
-    rescue Kafka::BufferOverflow
-      logger.error "Message for `#{topic}` dropped due to buffer overflow"
+    rescue Rdkafka::RdkafkaError => e
+      logger.error "Message for `#{topic}` dropped due to error: #{e.message}"
     end
 
     # Appends the given message to the producer buffer but does not send it until {.deliver_messages} is called.
@@ -67,7 +69,7 @@ module DeliveryBoy
     # @param partition_key [String, nil] a key used to deterministically assign
     #   a partition to the message.
     # @return [nil]
-    # @raise [Kafka::BufferOverflow] if the producer's buffer is full.
+    # @raise [Rdkafka::RdkafkaError] if the producer's buffer is full.
     def produce!(value, topic:, **options)
       instance.produce(value, topic: topic, **options)
     end
@@ -75,7 +77,7 @@ module DeliveryBoy
     # Delivers the items currently in the producer buffer.
     #
     # @return [nil]
-    # @raise [Kafka::DeliveryFailed] if delivery failed for some reason.
+    # @raise [Rdkafka::RdkafkaError] if delivery failed for some reason.
     def deliver_messages
       instance.deliver_messages
     end
@@ -113,6 +115,15 @@ module DeliveryBoy
 
     attr_writer :logger
 
+    # The instrumenter used by DeliveryBoy for emitting metrics.
+    #
+    # @return [DeliveryBoy::Instrumenter, DeliveryBoy::NullInstrumenter]
+    def instrumenter
+      @instrumenter ||= NullInstrumenter.new
+    end
+
+    attr_writer :instrumenter
+
     # The configuration used by DeliveryBoy.
     #
     # @return [DeliveryBoy::Config]
@@ -149,7 +160,7 @@ module DeliveryBoy
     private
 
     def instance
-      @instance ||= Instance.new(config, logger)
+      @instance ||= Instance.new(config, logger, instrumenter: instrumenter)
     end
   end
 end

@@ -172,7 +172,7 @@ The codec used to compress messages. Must be either `snappy` or `gzip`.
 
 ##### `compression_threshold`
 
-The minimum number of messages that must be buffered before compression is attempted. By default only one message is required. Only relevant if `compression_codec` is set.
+**Deprecated:** This setting has no effect with librdkafka. Compression is applied automatically to all batches when `compression_codec` is set.
 
 #### Network
 
@@ -226,87 +226,135 @@ The password required to read the ssl_client_cert_key. Must be used in combinati
 
 #### SASL Authentication and authorization
 
-See [ruby-kafka](https://github.com/zendesk/ruby-kafka#authentication-using-sasl) for more information.
+DeliveryBoy supports SASL authentication with multiple mechanisms.
 
-Use it through `GSSAPI`, `PLAIN` _or_ `OAUTHBEARER`.
+##### GSSAPI (Kerberos)
 
-##### `sasl_gssapi_principal`
+###### `sasl_gssapi_principal`
 
 The GSSAPI principal.
 
-##### `sasl_gssapi_keytab`
+###### `sasl_gssapi_keytab`
 
 Optional GSSAPI keytab.
 
-##### `sasl_plain_authzid`
-
-The authorization identity to use.
-
-##### `sasl_plain_username`
-
-The username used to authenticate.
-
-##### `sasl_plain_password`
-
-The password used to authenticate.
-
-##### `sasl_oauth_token_provider`
-
-A instance of a class which implements the `token` method.
-As described in [ruby-kafka](https://github.com/zendesk/ruby-kafka/tree/c3e90bc355fad1e27b9af1048966ff08d3d5735b#oauthbearer)
+**Example:**
 
 ```ruby
-class TokenProvider
-  def token
-    "oauth-token"
-  end
-end
-
 DeliveryBoy.configure do |config|
-  config.sasl_oauth_token_provider = TokenProvider.new
-  config.ssl_ca_certs_from_system = true
+  config.sasl_mechanism = "GSSAPI"
+  config.sasl_gssapi_principal = "kafka/hostname@REALM"
+  config.sasl_gssapi_keytab = "/path/to/keytab"
 end
 ```
 
-#### AWS MSK IAM Authentication and Authorization
+##### PLAIN Authentication
 
-##### sasl_aws_msk_iam_access_key_id
+###### `sasl_plain_username`
 
-The AWS IAM access key. Required.
+The username used to authenticate (legacy option).
 
-##### sasl_aws_msk_iam_secret_key_id
+###### `sasl_plain_password`
 
-The AWS IAM secret access key. Required.
+The password used to authenticate (legacy option).
 
-##### sasl_aws_msk_iam_aws_region
+###### `sasl_username`
 
-The AWS region. Required.
+The username used to authenticate (new consolidated option, works for both PLAIN and SCRAM).
 
-##### sasl_aws_msk_iam_session_token
+###### `sasl_password`
 
-The session token. This value can be optional.
+The password used to authenticate (new consolidated option, works for both PLAIN and SCRAM).
 
-###### Examples 
-
-Using a role arn and web identity token to generate temporary credentials:
+**Example:**
 
 ```ruby
-require "aws-sdk-core"
-require "delivery_boy"
-
-role = Aws::AssumeRoleWebIdentityCredentials.new(
-  role_arn: ENV["AWS_ROLE_ARN"],
-  web_identity_token_file: ENV["AWS_WEB_IDENTITY_TOKEN_FILE"]
-)
-
-DeliveryBoy.configure do |c|
-  c.sasl_aws_msk_iam_access_key_id = role.credentials.access_key_id
-  c.sasl_aws_msk_iam_secret_key_id = role.credentials.secret_access_key
-  c.sasl_aws_msk_iam_session_token = role.credentials.session_token
-  c.sasl_aws_msk_iam_aws_region    = ENV["AWS_REGION"]
-  c.ssl_ca_certs_from_system       = true
+DeliveryBoy.configure do |config|
+  config.sasl_mechanism = "PLAIN"
+  # You can use either the new consolidated options:
+  config.sasl_username = "your-username"
+  config.sasl_password = "your-password"
+  # Or the legacy mechanism-specific options:
+  # config.sasl_plain_username = "your-username"
+  # config.sasl_plain_password = "your-password"
 end
 ```
+
+##### SCRAM Authentication
+
+Supports SCRAM-SHA-256 and SCRAM-SHA-512 mechanisms.
+
+###### `sasl_scram_username`
+
+The username used to authenticate (legacy option).
+
+###### `sasl_scram_password`
+
+The password used to authenticate (legacy option).
+
+**Example:**
+
+```ruby
+DeliveryBoy.configure do |config|
+  config.sasl_mechanism = "SCRAM-SHA-256"  # or "SCRAM-SHA-512"
+  # You can use either the new consolidated options:
+  config.sasl_username = "your-username"
+  config.sasl_password = "your-password"
+  # Or the legacy mechanism-specific options:
+  # config.sasl_scram_username = "your-username"
+  # config.sasl_scram_password = "your-password"
+end
+```
+
+##### OAUTHBEARER (OIDC)
+
+OAUTHBEARER authentication is supported via OIDC configuration. librdkafka handles token acquisition and refresh automatically.
+
+###### `sasl_oauthbearer_method`
+
+Set to `"oidc"` to enable OIDC-based OAUTHBEARER authentication.
+
+###### `sasl_oauthbearer_client_id`
+
+The OAuth client ID for your application.
+
+###### `sasl_oauthbearer_client_secret`
+
+The OAuth client secret for your application.
+
+###### `sasl_oauthbearer_token_endpoint_url`
+
+The URL of the OAuth token endpoint (e.g., `https://auth.example.com/oauth/token`).
+
+###### `sasl_oauthbearer_scope` (optional)
+
+OAuth scope to request.
+
+###### `sasl_oauthbearer_extensions` (optional)
+
+Additional SASL extensions as comma-separated key=value pairs.
+
+```ruby
+DeliveryBoy.configure do |config|
+  config.sasl_mechanism = "OAUTHBEARER"
+  config.sasl_oauthbearer_method = "oidc"
+  config.sasl_oauthbearer_client_id = "your-client-id"
+  config.sasl_oauthbearer_client_secret = "your-client-secret"
+  config.sasl_oauthbearer_token_endpoint_url = "https://auth.example.com/oauth/token"
+  # Optional:
+  # config.sasl_oauthbearer_scope = "kafka"
+end
+```
+
+**Note:** The legacy `sasl_oauth_token_provider` callback is no longer supported. Use OIDC configuration instead.
+
+#### AWS MSK IAM Authentication
+
+**Note:** AWS MSK IAM authentication is not supported by librdkafka.
+
+**Recommended alternatives:**
+1. **Use AWS MSK SCRAM authentication** - Create SCRAM credentials in AWS Secrets Manager and use SCRAM-SHA-512
+2. **Use mTLS** - Configure mutual TLS with client certificates
 
 ### Testing
 

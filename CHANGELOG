@@ -1,6 +1,51 @@
 # Changelog
 
-## Unreleased
+## Unreleased (v2.0.0)
+
+### Migration to librdkafka
+
+* Migrated from ruby-kafka to rdkafka (librdkafka) for improved performance and stability
+
+### New Features
+
+* PLAIN and SCRAM-SHA-256/512 SASL authentication now fully functional with librdkafka
+* Added `sasl_username` and `sasl_password` as consolidated config options (work for both PLAIN and SCRAM)
+* Added automatic `security.protocol` detection (PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL)
+* Backward compatible SASL configuration - existing mechanism-specific options (sasl_plain_username, sasl_scram_username) continue to work
+* OAUTHBEARER authentication via OIDC configuration (librdkafka handles token refresh automatically)
+
+### Breaking Changes & Known Limitations
+
+* **AWS MSK IAM authentication is no longer supported** (librdkafka limitation)
+  - Alternative 1: Use AWS MSK SCRAM-SHA-512 authentication (recommended)
+  - Alternative 2: Use mTLS (mutual TLS) with client certificates
+* **OAUTHBEARER authentication changed from callback-based to OIDC configuration**
+  - `sasl_oauth_token_provider` is no longer supported
+  - Use new OIDC config options instead: `sasl_oauthbearer_method`, `sasl_oauthbearer_client_id`, `sasl_oauthbearer_client_secret`, `sasl_oauthbearer_token_endpoint_url`
+  - librdkafka handles token refresh automatically (no custom code needed)
+* `sasl_plain_authzid` is not supported by librdkafka and will be ignored with a warning
+* `compression_threshold` is no longer supported - librdkafka applies compression automatically to all batches when `compression_codec` is set
+
+### Config options no longer used
+
+The following config options are silently ignored (no error, but no effect):
+* `max_queue_size` - rdkafka manages its own internal queue
+* `ssl_ca_certs_from_system` - no librdkafka equivalent
+* `sasl_scram_mechanism` - use `sasl_mechanism` instead
+* `log_level` - rdkafka has its own logging configuration
+
+### Datadog Integration
+
+* Datadog metrics continue to work with the same metric names as before
+* Now uses `DeliveryBoy::Datadog` instead of `Kafka::Datadog`
+* Instrumentation is built on top of ActiveSupport::Notifications
+* Some metrics are no longer available due to rdkafka's different architecture:
+  - `producer.buffer.fill_ratio` / `producer.buffer.fill_percentage`
+  - `producer.deliver.attempts`
+  - `producer.ack.delay`
+  - `async_producer.queue.fill_ratio`
+
+### Other Changes
 
 * `compression_codec` in the `DeliveryBoy::Config` is now coerces its value into
   a symbol if the value is present.
